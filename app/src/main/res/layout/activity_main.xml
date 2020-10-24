@@ -85,12 +85,12 @@
         app:constraint_referenced_ids="content" />
 
     <LinearLayout
-        android:id="@+id/test"
+        android:id="@+id/info_liner_one"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_spacing"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/test2"
+        app:layout_constraintEnd_toStartOf="@+id/info_liner_sec"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/barrierMid">
@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             tools:text="@sample/posts.json/data/likes" />
 
         <ImageButton
@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_outline_share_24" />
 
@@ -126,7 +126,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             tools:text="@sample/posts.json/data/share" />
 
         <ImageButton
@@ -134,7 +134,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_chat_bubble_24" />
 
@@ -143,17 +143,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             tools:text="@sample/posts.json/data/chat" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/test2"
+        android:id="@+id/info_liner_sec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_spacing"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/test"
+        app:layout_constraintStart_toEndOf="@+id/info_liner_one"
         app:layout_constraintTop_toBottomOf="@+id/barrierMid">
 
         <ImageButton
@@ -169,7 +169,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/test_spacing"
+            android:layout_marginStart="@dimen/info_elemets_spacing"
             tools:text="@sample/posts.json/data/views" />
 
     </LinearLayout>
