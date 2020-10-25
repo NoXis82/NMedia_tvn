@@ -84,40 +84,37 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
-    <LinearLayout
-        android:id="@+id/info_liner_one"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/info_liner_sec"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrierMid">
-
-
         <ImageButton
             android:id="@+id/likes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:background="@android:color/transparent"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/likesCount"
             app:srcCompat="@drawable/ic_thumb_up_24" />
 
         <TextView
             android:id="@+id/likesCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/common_spacing"
             android:layout_marginStart="@dimen/info_elemets_spacing"
+            app:layout_constraintStart_toEndOf="@+id/likes"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintHorizontal_weight="1"
             tools:text="@sample/posts.json/data/likes" />
 
         <ImageButton
             android:id="@+id/share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/info_elemets_spacing"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintStart_toEndOf="@id/likesCount"
+            app:layout_constraintEnd_toStartOf="@+id/shareCount"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_outline_share_24" />
 
@@ -125,53 +122,58 @@
             android:id="@+id/shareCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/info_elemets_spacing"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintStart_toEndOf="@id/share"
+            app:layout_constraintEnd_toStartOf="@+id/chat"
             tools:text="@sample/posts.json/data/share" />
 
         <ImageButton
             android:id="@+id/chat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/info_elemets_spacing"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintStart_toEndOf="@+id/shareCount"
+            app:layout_constraintEnd_toStartOf="@+id/chatCount"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_chat_bubble_24" />
 
         <TextView
             android:id="@+id/chatCount"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/info_elemets_spacing"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintStart_toEndOf="@id/chat"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintEnd_toStartOf="@id/view"
             tools:text="@sample/posts.json/data/chat" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/info_liner_sec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/info_liner_one"
-        app:layout_constraintTop_toBottomOf="@+id/barrierMid">
 
         <ImageButton
             android:id="@+id/view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+
             android:background="@android:color/transparent"
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintStart_toEndOf="@+id/chatCount"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintEnd_toStartOf="@id/viewCount"
             app:srcCompat="@drawable/ic_views_24" />
 
         <TextView
             android:id="@+id/viewCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginStart="@dimen/info_elemets_spacing"
-            tools:text="@sample/posts.json/data/views" />
+            android:layout_marginTop="@dimen/common_spacing"
+            app:layout_constraintTop_toBottomOf="@id/barrierMid"
+            app:layout_constraintStart_toEndOf="@id/view"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="@sample/posts.json/data/views"/>
 
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
