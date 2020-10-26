@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity() {
             0 -> "$value"
             in 1..9 -> {
                 val str = "%.1f".format(value/1000.0)
+                    .dropLastWhile { it == '0'}
+                    .dropLastWhile { it == '.'}
                 "${str}K"
             }
             in 10..999 -> {
@@ -57,6 +59,8 @@ class MainActivity : AppCompatActivity() {
             }
             else -> {
                 val str = "%.1f".format(value/1000000.0)
+                    .dropLastWhile { it == '0'}
+                    .dropLastWhile { it == '.'}
                 "${str}М"
             }
         }
@@ -68,8 +72,8 @@ class MainActivity : AppCompatActivity() {
             author = "Нетология. Университет интернет-профессий будущего",
             content = "Привет, это новая Нетология! Когда-то Нетология начиналась с интенсивов по онлайн-маркетингу. Затем появились курсы по дизайну, разработке, аналитике и управлению. Мы растём сами и помогаем расти студентам: от новичков до уверенных профессионалов. Но самое важное остаётся с нами: мы верим, что в каждом уже есть сила, которая заставляет хотеть больше, целиться выше, бежать быстрее. Наша миссия — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb",
             published = "21 мая в 18:36",
-            share = 12345678,
-            likes = 79,
+            share = 12045678,
+            likes = 999,
             views = 5867
         )
         posts.add(post)
