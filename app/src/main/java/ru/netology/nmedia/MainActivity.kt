@@ -2,7 +2,7 @@ package ru.netology.nmedia
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_main.*
+import ru.netology.nmedia.databinding.ActivityMainBinding
 import ru.netology.nmedia.dto.*
 
 
@@ -13,60 +13,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        createPostTest()
-        actionClickBtnLike()
-        actionClickBtnShare()
-    }
-
-    private fun actionClickBtnShare() {
-        shareValue = posts[0].share
-        share?.setOnClickListener {
-            shareValue++
-            posts[0] = posts[0].copy(share = shareValue)
-            shareCount.text = formatCountToStr(posts[0].share)
-        }
-    }
-
-    private fun actionClickBtnLike() {
-        likes?.setOnClickListener {
-            likesValue = posts[0].likes
-            if (posts[0].likedByMe) {
-                likesValue--
-                likes?.setImageResource(R.drawable.ic_thumb_up_24)
-                posts[0] = posts[0].copy(likes = likesValue, likedByMe = false)
-            } else {
-                likesValue++
-                likes?.setImageResource(R.drawable.ic_thumb_true_up_24)
-                posts[0] = posts[0].copy(likes = likesValue, likedByMe = true)
-            }
-            likesCount.text = formatCountToStr(posts[0].likes)
-        }
-    }
-
-    private fun formatCountToStr(value: Int): String {
-        return when(value/1000) {
-            0 -> "$value"
-            in 1..9 -> {
-                val str = "%.1f".format(value/1000.0)
-                    .dropLastWhile { it == '0'}
-                    .dropLastWhile { it == '.'}
-                "${str}K"
-            }
-            in 10..999 -> {
-                val res = value/1000
-                "${res}K"
-            }
-            else -> {
-                val str = "%.1f".format(value/1000000.0)
-                    .dropLastWhile { it == '0'}
-                    .dropLastWhile { it == '.'}
-                "${str}М"
-            }
-        }
-    }
-
-    private fun createPostTest() {
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val post = Post(
             id = 1,
             author = "Нетология. Университет интернет-профессий будущего",
@@ -77,14 +25,55 @@ class MainActivity : AppCompatActivity() {
             views = 5867
         )
         posts.add(post)
-        author.text = post.author
-        published.text = post.published
-        content.text = post.content
-        likesCount.text = formatCountToStr(post.likes)
-        shareCount.text = formatCountToStr(post.share)
-        chatCount.text = formatCountToStr(post.chat)
-        viewCount.text = formatCountToStr(post.views)
+        binding.author.text = post.author
+        binding.published.text = post.published
+        binding.content.text = post.content
+        binding.likesCount.text = formatCountToStr(post.likes)
+        binding.shareCount.text = formatCountToStr(post.share)
+        binding.chatCount.text = formatCountToStr(post.chat)
+        binding.viewCount.text = formatCountToStr(post.views)
+
+        binding.likes.setOnClickListener {
+            likesValue = posts[0].likes
+            if (posts[0].likedByMe) {
+                likesValue--
+                binding.likes.setImageResource(R.drawable.ic_thumb_up_24)
+                posts[0] = posts[0].copy(likes = likesValue, likedByMe = false)
+            } else {
+                likesValue++
+                binding.likes.setImageResource(R.drawable.ic_thumb_true_up_24)
+                posts[0] = posts[0].copy(likes = likesValue, likedByMe = true)
+            }
+            binding.likesCount.text = formatCountToStr(posts[0].likes)
+        }
+
+        binding.share.setOnClickListener {
+            shareValue = posts[0].share
+            shareValue++
+            posts[0] = posts[0].copy(share = shareValue)
+            binding.shareCount.text = formatCountToStr(posts[0].share)
+        }
     }
 
-
+    private fun formatCountToStr(value: Int): String {
+        return when (value / 1000) {
+            0 -> "$value"
+            in 1..9 -> {
+                val str = "%.1f".format(value / 1000.0)
+                    .dropLastWhile { it == '0' }
+                    .dropLastWhile { it == '.' }
+                "${str}K"
+            }
+            in 10..999 -> {
+                val res = value / 1000
+                "${res}K"
+            }
+            else -> {
+                val str = "%.1f".format(value / 1000000.0)
+                    .dropLastWhile { it == '0' }
+                    .dropLastWhile { it == '.' }
+                "${str}М"
+            }
+        }
+    }
 }
