@@ -3,4 +3,14 @@
     <string name="nmedia_text">НМедиа</string>
     <string name="description_post_author_avatar">Аватар автора поста</string>
     <string name="description_post_menu">Меню поста</string>
+    <string name="post_remove_menu">Удалить</string>
+    <string name="edit_post_text">Текст поста</string>
+    <string name="btn_save_post">Сохранить</string>
+    <string name="error_empty_post">Контент не может быть пустым</string>
+    <string name="btn_post_edit">Редактировать</string>
+    <string name="activity_edit_post">Редактируемый пост</string>
+    <string name="edit_message">Редактируемое сообщение</string>
+    <string name="cancel_edit">Отменить редактирование</string>
+    <string name="author_message_edit">Автор сообщения</string>
+
 </resources>

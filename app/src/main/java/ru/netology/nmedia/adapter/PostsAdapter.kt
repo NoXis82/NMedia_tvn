@@ -2,8 +2,8 @@ package ru.netology.nmedia.adapter
 
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,13 +11,8 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
 
-typealias OnLikesListener = (post: Post) -> Unit
-typealias OnShareListener = (post: Post) -> Unit
-
-
 class PostsAdapter(
-    private val onLikesListener: OnLikesListener,
-    private val onShareListener: OnShareListener
+    private val onInteractionListener: IOnInteractionListener
 ) : ListAdapter<Post, PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -26,7 +21,7 @@ class PostsAdapter(
             parent,
             false
         )
-        return PostViewHolder(postView, onLikesListener, onShareListener)
+        return PostViewHolder(postView, onInteractionListener)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -37,9 +32,7 @@ class PostsAdapter(
 
 class PostViewHolder(
     private val binding: PostCardBinding,
-    private val onLikesListener: OnLikesListener,
-    private val onShareListener: OnShareListener
-
+    private val onInteractionListener: IOnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
@@ -54,12 +47,32 @@ class PostViewHolder(
                 if (post.likedByMe) R.drawable.ic_thumb_true_up_24
                 else R.drawable.ic_thumb_up_24
             )
+
+            menuPost.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.option_menu_post)
+                    setOnMenuItemClickListener { item ->
+                        when(item.itemId) {
+                            R.id.postRemove -> {
+                                onInteractionListener.onRemove(post)
+                                true
+                            }
+                            R.id.postEdit -> {
+                                onInteractionListener.onEdit(post)
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }.show()
+            }
+
             likes.setOnClickListener {
-                onLikesListener(post)
+                onInteractionListener.onLike(post)
 
             }
             share.setOnClickListener {
-                onShareListener(post)
+                onInteractionListener.onShare(post)
             }
         }
     }
