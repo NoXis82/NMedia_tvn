@@ -9,7 +9,8 @@
       "likes": 6000,
       "share": 389,
       "chat": 12,
-      "views": 500
+      "views": 500,
+      "likedByMe": true
     }
   ]
 }

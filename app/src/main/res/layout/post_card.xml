@@ -46,16 +46,16 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="@sample/posts.json/data/published" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/menu_post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/common_spacing"
+        android:layout_width="40dp"
+        android:layout_height="48dp"
         android:background="@android:color/transparent"
+        style="@style/Widget.AppTheme.FreeStyleButton"
         android:contentDescription="@string/description_post_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_more_vertical_24" />
+        app:icon="@drawable/ic_more_vertical_24" />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierTop"
@@ -84,75 +84,53 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/likes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checkable="true"
         android:background="@android:color/transparent"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
+        style="@style/Widget.AppTheme.LikeCheckBox"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/likesCount"
-        app:srcCompat="@drawable/ic_thumb_up_24" />
+        app:layout_constraintEnd_toStartOf="@+id/share"
+        app:icon="@drawable/ic_like_24dp"
+        tools:checked="@sample/posts.json/data/likedByMe"
+        tools:text="@sample/posts.json/data/likes"/>
 
-    <TextView
-        android:id="@+id/likesCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        app:layout_constraintStart_toEndOf="@+id/likes"
-        app:layout_constraintTop_toBottomOf="@id/barrierMid"
-        app:layout_constraintEnd_toStartOf="@id/share"
-        tools:text="@sample/posts.json/data/likes" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
-        app:layout_constraintTop_toBottomOf="@id/barrierMid"
-        app:layout_constraintStart_toEndOf="@id/likesCount"
-        app:layout_constraintEnd_toStartOf="@+id/shareCount"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_outline_share_24" />
-
-    <TextView
-        android:id="@+id/shareCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
+        android:checkable="true"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
-        app:layout_constraintStart_toEndOf="@id/share"
+        app:layout_constraintStart_toEndOf="@id/likes"
         app:layout_constraintEnd_toStartOf="@+id/chat"
-        tools:text="@sample/posts.json/data/share" />
+        tools:text="@sample/posts.json/data/share"
+        app:icon="@drawable/ic_outline_share_24"
+        style="@style/Widget.AppTheme.FreeStyleButton"/>
 
     <ImageButton
         android:id="@+id/chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
-        app:layout_constraintStart_toEndOf="@+id/shareCount"
+        app:layout_constraintStart_toEndOf="@+id/share"
         app:layout_constraintEnd_toStartOf="@+id/chatCount"
+        app:layout_constraintLeft_toLeftOf="@+id/share"
+        android:layout_marginVertical="12dp"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_chat_bubble_24" />
+        app:srcCompat="@drawable/ic_chat_bubble_24"
+        android:contentDescription="@string/description_chats_item" />
 
     <TextView
         android:id="@+id/chatCount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
+        android:layout_marginStart="@dimen/info_elements_spacing"
+        app:layout_constraintBaseline_toBaselineOf="@id/share"
         app:layout_constraintStart_toEndOf="@id/chat"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintEnd_toStartOf="@id/view"
@@ -163,25 +141,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
+        android:layout_marginTop="12dp"
         app:layout_constraintStart_toEndOf="@+id/chatCount"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintEnd_toStartOf="@id/viewCount"
-        app:srcCompat="@drawable/ic_views_24" />
+        app:srcCompat="@drawable/ic_views_24"
+        android:contentDescription="@string/description_view_item" />
 
     <TextView
         android:id="@+id/viewCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/info_elemets_spacing"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:layout_marginBottom="@dimen/common_spacing"
+        android:layout_marginStart="@dimen/info_elements_spacing"
+        app:layout_constraintBaseline_toBaselineOf="@id/share"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintStart_toEndOf="@id/view"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="@sample/posts.json/data/views"/>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,7 @@ class PostRepositoryInMemoryImpl: IPostRepository {
             share = 12045678,
             likes = 999,
             views = 5867,
-            likedByMe = false
+            likedByMe = true
         ),
         Post(
             id = nextId++,
@@ -33,7 +33,7 @@ class PostRepositoryInMemoryImpl: IPostRepository {
             author = "Нетология. Университет интернет-профессий будущего",
             content = "Таймбоксинг — отличный способ навести порядок в своём календаре и разобраться с делами, которые долго откладывали на потом. Его главный принцип — на каждое дело заранее выделяется определённый отрезок времени. В это время вы работаете только над одной задачей, не переключаясь на другие. Собрали советы, которые помогут внедрить таймбоксинг \uD83D\uDC47\uD83C\uDFFB",
             published = "22 сентября в 10:12",
-            likedByMe = false
+            likedByMe = true
         ),
         Post(
             id = nextId++,

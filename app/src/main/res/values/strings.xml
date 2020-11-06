@@ -12,5 +12,7 @@
     <string name="edit_message">Edit Message</string>
     <string name="cancel_edit">cancel edit</string>
     <string name="author_message_edit">Author message edit</string>
+    <string name="description_chats_item">Chats Item</string>
+    <string name="description_view_item">View Item</string>
 
 </resources>

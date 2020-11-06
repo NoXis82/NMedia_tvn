@@ -12,5 +12,7 @@
     <string name="edit_message">Редактируемое сообщение</string>
     <string name="cancel_edit">Отменить редактирование</string>
     <string name="author_message_edit">Автор сообщения</string>
+    <string name="description_chats_item">Chats Item</string>
+    <string name="description_view_item">View Item</string>
 
 </resources>
