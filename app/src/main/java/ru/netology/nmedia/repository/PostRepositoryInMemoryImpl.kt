@@ -4,6 +4,9 @@ package ru.netology.nmedia.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.dto.*
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 class PostRepositoryInMemoryImpl: IPostRepository {
     private var likesValue = 0
@@ -128,19 +131,21 @@ class PostRepositoryInMemoryImpl: IPostRepository {
     }
 
     override fun savePost(post: Post) {
+        val dateFormat = SimpleDateFormat("dd MMMM yyyy в HH:mm", Locale.ENGLISH)
+        val currentDate = dateFormat.format(Date())
         if (post.id == 0L) {
             posts = listOf(
                 post.copy(
                     id = nextId++,
-                    author = "Me",
-                    published = "now"
+                    author = "Этот пост создан мной",
+                    published = currentDate
                 )
             ) + posts
             data.value = posts
             return
         }
         posts = posts.map {
-            if(it.id != post.id) it else it.copy(content = post.content)
+            if (it.id != post.id) it else it.copy(content = post.content)
         }
         data.value = posts
     }

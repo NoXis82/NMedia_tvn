@@ -14,5 +14,8 @@
     <string name="author_message_edit">Author message edit</string>
     <string name="description_chats_item">Chats Item</string>
     <string name="description_view_item">View Item</string>
+    <string name="chooser_share_post">Share post</string>
+    <string name="add_post">Add post</string>
+    <string name="text_add_new_post">Add new Post</string>
 
 </resources>
