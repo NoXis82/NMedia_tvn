@@ -11,11 +11,12 @@ class PostViewModel : ViewModel() {
         id = 0,
         content = "",
         author = "",
-        published = ""
+        published = "",
+        videoUrl = null
     )
     private val repository: IPostRepository = PostRepositoryInMemoryImpl()
     val data = repository.getAll()
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
     fun like(id: Long) = repository.like(id)
     fun share(id: Long) = repository.share(id)
     fun removePost(id: Long) = repository.removePost(id)

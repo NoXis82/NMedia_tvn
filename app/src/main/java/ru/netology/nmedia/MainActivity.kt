@@ -2,6 +2,7 @@ package ru.netology.nmedia
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -50,6 +51,11 @@ class MainActivity : AppCompatActivity() {
                 viewModel.removePost(post.id)
             }
 
+            override fun playVideoPost(post: Post) {
+                val videoIntent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
+                startActivity(videoIntent)
+            }
+
             override fun onEdit(post: Post) {
                 viewModel.editContent(post)
                 val intent = Intent(this@MainActivity, EditPost::class.java)
@@ -61,7 +67,6 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.fab.setOnClickListener {
-
             val intent = Intent(this, AddNewPost::class.java)
             startActivityForResult(intent, newPostRequestCode)
         }

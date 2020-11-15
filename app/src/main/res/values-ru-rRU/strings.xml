@@ -17,5 +17,6 @@
     <string name="chooser_share_post">Поделиться</string>
     <string name="add_post">Создать пост</string>
     <string name="text_add_new_post">Создание нового поста</string>
+    <string name="description_video_play">Запустить видео</string>
 
 </resources>
