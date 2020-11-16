@@ -57,30 +57,54 @@
         app:layout_constraintTop_toTopOf="parent"
         app:icon="@drawable/ic_more_vertical_24" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrierTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="avatar,published,menu_post" />
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="avatar,published,menu_post" />
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/common_spacing"
         android:layout_marginBottom="@dimen/common_spacing"
         android:autoLink="web"
-        app:layout_constraintBottom_toTopOf="@id/barrierMid"
+        app:layout_constraintBottom_toTopOf="@id/frame_video_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrierTop"
         tools:text="@sample/posts.json/data/content" />
 
+    <FrameLayout
+        android:id="@+id/frame_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="@dimen/common_spacing"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/barrierMid"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/content"
+        android:background = "@drawable/picture_cap" >
+
+        <ImageButton
+            android:id="@+id/buttonPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_play_circle_48"
+            android:contentDescription="@string/description_video_play" />
+
+    </FrameLayout>
+
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrierMid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/frame_video_view"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="content" />
 
@@ -94,6 +118,7 @@
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/share"
+        app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
         app:icon="@drawable/ic_like_24dp"
         tools:checked="@sample/posts.json/data/likedByMe"
         tools:text="@sample/posts.json/data/likes"/>
@@ -108,6 +133,7 @@
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintStart_toEndOf="@id/likes"
         app:layout_constraintEnd_toStartOf="@+id/chat"
+        app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
         tools:text="@sample/posts.json/data/share"
         app:icon="@drawable/ic_outline_share_24"
         style="@style/Widget.AppTheme.FreeStyleButton"/>
@@ -119,8 +145,7 @@
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintStart_toEndOf="@+id/share"
         app:layout_constraintEnd_toStartOf="@+id/chatCount"
-        app:layout_constraintLeft_toLeftOf="@+id/share"
-        android:layout_marginVertical="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
         android:background="@android:color/transparent"
         app:srcCompat="@drawable/ic_chat_bubble_24"
         android:contentDescription="@string/description_chats_item" />
@@ -134,6 +159,7 @@
         app:layout_constraintStart_toEndOf="@id/chat"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintEnd_toStartOf="@id/view"
+        app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
         tools:text="@sample/posts.json/data/chat" />
 
     <ImageButton
@@ -141,10 +167,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:layout_marginTop="12dp"
         app:layout_constraintStart_toEndOf="@+id/chatCount"
         app:layout_constraintTop_toBottomOf="@id/barrierMid"
         app:layout_constraintEnd_toStartOf="@id/viewCount"
+        app:layout_constraintBottom_toTopOf="@+id/barrierBottom"
         app:srcCompat="@drawable/ic_views_24"
         android:contentDescription="@string/description_view_item" />
 
@@ -158,5 +184,12 @@
         app:layout_constraintStart_toEndOf="@id/view"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="@sample/posts.json/data/views"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="viewCount,view,chatCount,chat,share,likes" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

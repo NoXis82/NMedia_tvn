@@ -12,114 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/toolsTop"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/post_card" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group_cancel_edit"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:constraint_referenced_ids="btn_cancel_edit, ic_edit, text_edit, author_edit, toolsCancel" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/toolsCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="ic_edit, text_edit, btn_cancel_edit" />
-
-    <View
-        android:id="@+id/background_edit"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@color/ic_launcher_background"
-        app:layout_constraintBottom_toTopOf="@+id/toolsTop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolsCancel" />
-
-    <ImageView
-        android:id="@+id/ic_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/common_spacing"
-        app:layout_constraintBottom_toTopOf="@+id/toolsTop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolsCancel"
-        app:srcCompat = "@drawable/ic_edit_48"
-        android:contentDescription="@string/activity_edit_post"/>
-
-    <TextView
-        android:id="@+id/text_edit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toTopOf="@id/toolsCancel"
-        app:layout_constraintStart_toEndOf="@+id/ic_edit"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cancel_edit"
-        app:layout_constraintBottom_toTopOf="@+id/author_edit"
-        android:importantForAutofill="no"
-        android:textColor="@color/edit_message_text"
-        android:text="@string/edit_message"/>
-
-    <TextView
-        android:id="@+id/author_edit"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/common_spacing"
-        android:layout_marginEnd="@dimen/common_spacing"
-        app:layout_constraintTop_toTopOf="@id/toolsCancel"
-        app:layout_constraintStart_toEndOf="@+id/ic_edit"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cancel_edit"
-        app:layout_constraintTop_toBottomOf="@+id/text_edit"
-        app:layout_constraintBottom_toTopOf="@+id/toolsTop"
-        android:text="@string/author_message_edit"/>
-
-    <ImageButton
-        android:id="@+id/btn_cancel_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:srcCompat = "@drawable/ic_cancel_48"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolsCancel"
-        app:layout_constraintBottom_toTopOf="@+id/toolsTop"
-        android:contentDescription="@string/cancel_edit" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/toolsTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top"
-        app:constraint_referenced_ids="edit_new_content, btn_save_post"/>
-
-    <EditText
-        android:id="@+id/edit_new_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/edit_post_text"
-        android:inputType="textMultiLine"
-        android:background="@android:color/transparent"
-        android:padding="@dimen/common_spacing"
-        android:importantForAutofill="no"
-        app:layout_constraintTop_toTopOf="@+id/toolsTop"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_save_post"/>
-
-    <ImageButton
-        android:id="@+id/btn_save_post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/common_spacing"
-        android:background="@android:color/transparent"
-        android:contentDescription="@string/btn_save_post"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/edit_new_content"
-        app:srcCompat="@drawable/ic_add_post_48"/>
+        app:srcCompat="@drawable/ic_add_24dp"
+        android:contentDescription="@string/add_post" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
