@@ -1,41 +1,50 @@
 package ru.netology.nmedia
 
-import android.app.Activity
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import ru.netology.nmedia.databinding.ActivityAddNewPostBinding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
+import ru.netology.nmedia.utils.AndroidUtils
+import ru.netology.nmedia.utils.StringArg
+import ru.netology.nmedia.viewmodel.PostViewModel
 
-class AddNewPost : AppCompatActivity() {
-    private val intentResult = Intent()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val binding = ActivityAddNewPostBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+class AddNewPost : Fragment() {
+    companion object {
+        var Bundle.textArg: String? by StringArg
+    }
+
+    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = FragmentAddNewPostBinding.inflate(layoutInflater)
         binding.newContent.requestFocus()
         binding.btnSaveNewPost.setOnClickListener {
             with(binding.newContent) {
                 if (TextUtils.isEmpty(text)) {
                     Toast.makeText(
-                        this@AddNewPost,
+                        context,
                         context.getString(R.string.error_empty_post),
                         Toast.LENGTH_LONG
                     ).show()
                     return@setOnClickListener
                 }
-                val content = binding.newContent.text.toString()
-                intentResult.putExtra(Intent.EXTRA_TEXT, content)
-                setResult(Activity.RESULT_OK, intentResult)
+                viewModel.changeContent(binding.newContent.text.toString())
+                viewModel.savePost()
+                AndroidUtils.hideKeyboard(requireView())
+                findNavController().navigateUp()
             }
-            finish()
         }
-
-        binding.btnCancelAddPost.setOnClickListener {
-            setResult(Activity.RESULT_CANCELED, intentResult)
-            finish()
-        }
+        return binding.root
     }
+
 
 }

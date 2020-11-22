@@ -1,48 +1,53 @@
 package ru.netology.nmedia
 
-import android.app.Activity
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import ru.netology.nmedia.databinding.ActivityEditPostBinding
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.databinding.FragmentEditPostBinding
+import ru.netology.nmedia.utils.StringArg
+import ru.netology.nmedia.viewmodel.PostViewModel
 
 
-class EditPost : AppCompatActivity() {
-    private val intentResult = Intent()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val binding = ActivityEditPostBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+class EditPost : Fragment() {
+    companion object {
+        var Bundle.authorEdit: String? by StringArg
+        var Bundle.publishedEdit: String? by StringArg
+        var Bundle.contentEdit: String? by StringArg
+    }
+
+    private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = FragmentEditPostBinding.inflate(layoutInflater)
+        binding.author.text = arguments?.authorEdit
+        binding.published.text = arguments?.publishedEdit
+        arguments?.contentEdit?.let(binding.editContent::setText)
         binding.editContent.requestFocus()
-        intent?.let {
-            binding.author.text = it.getStringExtra("author")
-            binding.published.text = it.getStringExtra("published")
-            binding.editContent.setText(it.getStringExtra("content"))
-        }
-
         binding.btnSavePost.setOnClickListener {
             with(binding.editContent) {
                 if (TextUtils.isEmpty(text)) {
                     Toast.makeText(
-                        this@EditPost,
+                        context,
                         context.getString(R.string.error_empty_post),
                         Toast.LENGTH_LONG
                     ).show()
                     return@setOnClickListener
                 }
-                val content = binding.editContent.text.toString()
-                intentResult.putExtra(Intent.EXTRA_TEXT, content)
-                setResult(Activity.RESULT_OK, intentResult)
+                viewModel.changeContent(binding.editContent.text.toString())
+                viewModel.savePost()
+                findNavController().navigate(R.id.action_editPost_to_feedFragment)
             }
-            finish()
         }
-
-        binding.btnCancelEdit.setOnClickListener {
-            setResult(Activity.RESULT_CANCELED, intentResult)
-            finish()
-        }
+        return binding.root
     }
 
 }
