@@ -73,30 +73,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="top"
-        app:constraint_referenced_ids="btn_cancel_edit, btn_save_post" />
+        app:constraint_referenced_ids="btn_save_post" />
 
     <ImageButton
         android:id="@+id/btn_save_post"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_add_post_48"
-        app:layout_constraintEnd_toStartOf="@+id/btn_cancel_edit"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add_post_48"
         app:layout_constraintStart_toStartOf="parent"
         android:padding="@dimen/common_spacing"
         android:contentDescription="@string/btn_save_post"/>
 
-    <ImageButton
-        android:id="@+id/btn_cancel_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:srcCompat = "@drawable/ic_cancel_48"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btn_save_post"
-        android:padding="@dimen/common_spacing"
-        android:contentDescription="@string/cancel_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
