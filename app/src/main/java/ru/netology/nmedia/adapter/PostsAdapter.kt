@@ -46,7 +46,7 @@ class PostViewHolder(
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
             if(post.videoUrl == "") {
-                binding.frameVideoView.visibility = View.GONE
+                frameVideoView.visibility = View.GONE
             } else {
                 binding.frameVideoView.visibility = View.VISIBLE
             }
