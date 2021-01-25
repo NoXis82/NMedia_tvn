@@ -98,11 +98,14 @@ class  FeedFragment : Fragment() {
             findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
         }
         binding.rvPostList.adapter = adapter
+
+
         viewModel.state.observe(viewLifecycleOwner) { model ->
             adapter.submitList(model.posts)
             binding.groupStatus.isVisible = model.error
             binding.tvTextStatusEmpty.isVisible = model.empty
             binding.pbProgress.isVisible = model.loading
+
         }
         binding.errorButton.setOnClickListener {
             viewModel.loadPosts()

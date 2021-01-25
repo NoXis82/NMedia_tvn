@@ -29,8 +29,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _state
     private val edited = MutableLiveData(empty)
     private val _postsRefresh = SingleLiveEvent<Unit>()
-    val postsRefresh: LiveData<Unit>
-        get() = _postsRefresh
+//    val postsRefresh: LiveData<Unit>
+//        get() = _postsRefresh
+
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
@@ -74,8 +75,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: IOException) {
                 _state.postValue(_state.value?.copy(posts = old))
                 _postsRefresh.postValue(Unit)
-                _state.postValue(FeedModel(refreshing = false))
-            }
+            }.also { _state::postValue }
         }
     }
 
