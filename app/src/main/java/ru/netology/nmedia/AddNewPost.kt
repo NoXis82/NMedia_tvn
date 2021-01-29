@@ -53,11 +53,11 @@ class AddNewPost : Fragment() {
                 viewModel.savePost()
                 viewModel.isHandledBackPressed = ""
                 AndroidUtils.hideKeyboard(requireView())
-                viewModel.postCreated.observe(viewLifecycleOwner) {
-                    viewModel.loadPosts()
-                    findNavController().navigateUp()
-                }
+                findNavController().navigateUp()
             }
+        }
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            viewModel.loadPosts()
         }
         return binding.root
     }

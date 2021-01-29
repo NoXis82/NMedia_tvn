@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import okhttp3.Response
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
@@ -20,7 +21,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val empty = Post(
         id = 0,
         content = "",
-        author = "",
+        author = "Me",
+        authorAvatar = "",
         published = "",
         videoUrl = ""
     )
@@ -78,22 +80,22 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun share(id: Long) = repository.share(id)
-
     fun removePost(id: Long) {
-        thread {
-            val old = _state.value?.posts.orEmpty()
-            _state.postValue(
-                _state.value?.copy(posts = _state.value?.posts.orEmpty()
-                    .filter { it.id != id }
+        val old = _state.value?.posts.orEmpty()
+        repository.removePost(id, object : IPostRepository.RemovePostCallback {
+            override fun onSuccess() {
+                _state.postValue(
+                    FeedModel(posts = _state.value?.posts.orEmpty()
+                        .filter { it.id != id }
+                    )
                 )
-            )
-            try {
-                repository.removePost(id)
-            } catch (e: IOException) {
-                _state.postValue(_state.value?.copy(posts = old))
             }
-        }
+
+            override fun onError(e: Exception) {
+                _state.postValue(FeedModel(posts = old))
+            }
+
+        })
     }
 
     fun refreshingPosts() {
@@ -127,13 +129,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePost() {
-        edited.value?.let {
-            thread {
-                repository.savePost(it)
-                _postCreated.postValue(Unit)
-            }
+        edited.value?.let {post ->
+            repository.savePost(post, object : IPostRepository.SavePostCallback {
+                override fun onSuccess(post: Post) {
+                    _state.postValue(_state.value?.posts?.let {
+                        FeedModel(posts = it.plus(post))
+                    })
+                }
+
+                override fun onError(e: Exception) {
+                    _postCreated.postValue(Unit)
+                }
+            })
         }
-        edited.value = empty
     }
 
     fun changeContent(content: String) {

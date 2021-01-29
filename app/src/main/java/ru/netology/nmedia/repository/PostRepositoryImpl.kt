@@ -93,31 +93,46 @@ class PostRepositoryImpl : IPostRepository {
             })
     }
 
-    override fun share(id: Long) {
-        TODO("Not yet implemented")
-    }
-
-    override fun removePost(id: Long) {
+    override fun removePost(id: Long, callback: IPostRepository.RemovePostCallback) {
         val request: Request = Request.Builder()
             .delete()
             .url("${BASE_URL}/api/posts/$id")
             .build()
 
         client.newCall(request)
-            .execute()
-            .close()
+            .enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    callback.onError(e)
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    callback.onSuccess()
+                }
+            })
     }
 
-    override fun savePost(post: Post) {
+    override fun savePost(post: Post, callback: IPostRepository.SavePostCallback) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("${BASE_URL}/api/posts")
             .build()
 
         client.newCall(request)
-            .execute()
-            .close()
-    }
+            .enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    callback.onError(e)
+                }
 
+                override fun onResponse(call: Call, response: Response) {
+                    response.body?.use {
+                        try {
+                            callback.onSuccess(gson.fromJson(it.string(), Post::class.java))
+                        } catch (e: IOException) {
+                            callback.onError(e)
+                        }
+                    }
+                }
+            })
+    }
 
 }
