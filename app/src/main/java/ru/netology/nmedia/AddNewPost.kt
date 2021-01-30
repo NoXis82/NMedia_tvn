@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
 import ru.netology.nmedia.utils.AndroidUtils
@@ -56,8 +56,10 @@ class AddNewPost : Fragment() {
                 findNavController().navigateUp()
             }
         }
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            viewModel.loadPosts()
+        }
         return binding.root
     }
-
 
 }
