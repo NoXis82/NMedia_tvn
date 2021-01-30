@@ -5,12 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.annotation.Dimension
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.AttachmentType
 
 class PostsAdapter(
     private val onInteractionListener: IOnInteractionListener
@@ -45,10 +51,22 @@ class PostViewHolder(
             chatCount.text = formatCountToStr(post.chat)
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
-            if(post.videoUrl == "") {
-                frameVideoView.visibility = View.GONE
+            Glide.with(avatar)
+                .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
+                .placeholder(R.drawable.ic_account_circle_48)
+                .timeout(10_000)
+                .circleCrop()
+                .into(avatar)
+            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
+                frameAttachView.visibility = View.VISIBLE
+                ivImageAttachPost.contentDescription = post.attachment?.description
+                Glide.with(ivImageAttachPost)
+                    .load("http://10.0.2.2:9999/images/${post.attachment?.url}")
+                    .placeholder(R.drawable.ic_attach_error_48)
+                    .timeout(10_000)
+                    .into(ivImageAttachPost)
             } else {
-                binding.frameVideoView.visibility = View.VISIBLE
+                frameAttachView.visibility = View.GONE
             }
 
             binding.root.setOnClickListener {
@@ -59,7 +77,7 @@ class PostViewHolder(
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.option_menu_post)
                     setOnMenuItemClickListener { item ->
-                        when(item.itemId) {
+                        when (item.itemId) {
                             R.id.postRemove -> {
                                 onInteractionListener.onRemove(post)
                                 true
@@ -82,7 +100,7 @@ class PostViewHolder(
                 onInteractionListener.onShare(post)
             }
 
-            binding.frameVideoView.setOnClickListener {
+            binding.frameAttachView.setOnClickListener {
                 onInteractionListener.playVideoPost(post)
             }
             binding.buttonPlay.setOnClickListener {

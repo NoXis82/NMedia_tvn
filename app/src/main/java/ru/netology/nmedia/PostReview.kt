@@ -33,15 +33,14 @@ class PostReview : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentPostReviewBinding.inflate(layoutInflater)
-
         binding.content.text = arguments?.content
         binding.author.text = arguments?.author
         binding.published.text = arguments?.published
-        if (arguments?.videoUrl != "") {
-            binding.frameVideoView.visibility = View.VISIBLE
-        } else {
-            binding.frameVideoView.visibility = View.GONE
-        }
+//        if (arguments?.videoUrl != "") {
+//            binding.frameVideoView.visibility = View.VISIBLE
+//        } else {
+//            binding.frameVideoView.visibility = View.GONE
+//        }
 
         binding.menuPost.setOnClickListener {
             PopupMenu(it.context, it).apply {
