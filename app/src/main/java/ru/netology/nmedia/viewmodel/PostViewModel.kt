@@ -57,7 +57,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
             })
         } else {
-            repository.likeById(post, object : IPostRepository.LikeByIdCallback {
+            repository.likeById(post.id, object : IPostRepository.LikeByIdCallback {
                 override fun onSuccess(post: Post) {
                     _state.postValue(
                         FeedModel(posts = _state.value?.posts.orEmpty().map {
