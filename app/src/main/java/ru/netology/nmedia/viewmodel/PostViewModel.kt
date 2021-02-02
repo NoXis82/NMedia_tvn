@@ -1,14 +1,17 @@
 package ru.netology.nmedia.viewmodel
 
 import android.app.Application
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.model.ApiError
+import ru.netology.nmedia.model.ApiException
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.utils.SingleLiveEvent
-
 
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,6 +35,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
+    private val _postCreatedError = SingleLiveEvent<ApiError>()
+    val postCreatedError: LiveData<ApiError>
+        get() = _postCreatedError
 
     init {
         loadPosts()
@@ -53,7 +59,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 override fun onError(e: Exception) {
-                    _state.value = FeedModel(error = true)
+                    _state.value = FeedModel(errorVisible = true)
+                    Toast.makeText(getApplication(), "${e.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
         } else {
@@ -71,7 +79,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
 
                 override fun onError(e: Exception) {
-                    _state.value = FeedModel(error = true)
+                    _state.value = FeedModel(errorVisible = true)
+
                 }
             })
         }
@@ -89,7 +98,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
+
                 _state.postValue(FeedModel(posts = old))
+                _state.postValue(FeedModel(errorVisible = true))
             }
 
         })
@@ -103,12 +114,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _state.postValue(FeedModel(posts = posts))
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: ApiError) {
                 _state.value?.copy(refreshing = false)
                 _state.postValue(FeedModel(posts = old))
                 _postsRefreshError.postValue(Unit)
             }
-
         })
     }
 
@@ -119,23 +129,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _state.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
 
-            override fun onError(e: Exception) {
-                _state.postValue(FeedModel(error = true))
+            override fun onError(e: ApiError) {
+                _state.postValue(FeedModel(errorVisible = true, error =  e))
             }
         })
     }
 
     fun savePost() {
-        edited.value?.let {post ->
+        edited.value?.let { post ->
             repository.savePost(post, object : IPostRepository.SavePostCallback {
                 override fun onSuccess(post: Post) {
+                    _postCreated.postValue(Unit)
                     _state.postValue(_state.value?.posts?.let {
                         FeedModel(posts = it.plus(post))
                     })
                 }
 
-                override fun onError(e: Exception) {
-                    _postCreated.postValue(Unit)
+                override fun onError(e: ApiError) {
+                    _postCreatedError.value = e
                 }
             })
         }

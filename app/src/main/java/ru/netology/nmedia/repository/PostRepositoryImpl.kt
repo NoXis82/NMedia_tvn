@@ -6,6 +6,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.model.ApiError
+
 import java.lang.RuntimeException
 
 class PostRepositoryImpl : IPostRepository {
@@ -13,21 +15,13 @@ class PostRepositoryImpl : IPostRepository {
     override fun getAllAsync(callback: IPostRepository.GetAllCallback) {
         PostsApi.retrofitService.getAll()
             .enqueue(object : Callback<List<Post>> {
-                override fun onResponse(
-                    call: Call<List<Post>>,
-                    response: Response<List<Post>>
-                ) {
-                    if (response.isSuccessful) {
-                        callback.onSuccess(response.body().orEmpty())
-                    } else {
-                        callback.onError(RuntimeException(response.message()))
-                    }
+                override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
+                    callback.onSuccess(response.body().orEmpty())
                 }
 
                 override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                    callback.onError(RuntimeException(t))
+                    callback.onError(ApiError.fromThrowable(t))
                 }
-
             })
     }
 
@@ -41,7 +35,11 @@ class PostRepositoryImpl : IPostRepository {
                     if (response.isSuccessful) {
                         response.body()?.let { callback.onSuccess(it) }
                     } else {
-                        callback.onError(RuntimeException(response.message()))
+                        callback.onError(
+                            RuntimeException(
+                                response.errorBody()?.string().orEmpty()
+                            )
+                        )
                     }
                 }
 
@@ -62,11 +60,15 @@ class PostRepositoryImpl : IPostRepository {
                     if (response.isSuccessful) {
                         response.body()?.let { callback.onSuccess(it) }
                     } else {
-                        callback.onError(RuntimeException(response.message()))
+                        callback.onError(
+                            RuntimeException(
+                                response.errorBody()?.string().orEmpty()
+                            )
+                        )
                     }
                 }
 
-                override fun onFailure(call: retrofit2.Call<Post>, t: Throwable) {
+                override fun onFailure(call: Call<Post>, t: Throwable) {
                     callback.onError(RuntimeException(t))
                 }
 
@@ -83,7 +85,11 @@ class PostRepositoryImpl : IPostRepository {
                     if (response.isSuccessful) {
                         callback.onSuccess()
                     } else {
-                        callback.onError(RuntimeException(response.message()))
+                        callback.onError(
+                            RuntimeException(
+                                response.errorBody()?.string().orEmpty()
+                            )
+                        )
                     }
                 }
 
@@ -96,18 +102,13 @@ class PostRepositoryImpl : IPostRepository {
     override fun savePost(post: Post, callback: IPostRepository.SavePostCallback) {
         PostsApi.retrofitService.savePost(post)
             .enqueue(object : Callback<Post> {
+
                 override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            callback.onSuccess(it)
-                        }
-                    } else {
-                        callback.onError(RuntimeException(response.message()))
-                    }
+                    callback.onSuccess(response.body() ?: throw RuntimeException(""))
                 }
 
                 override fun onFailure(call: Call<Post>, t: Throwable) {
-                    callback.onError(RuntimeException(t))
+                    callback.onError(ApiError.fromThrowable(t))
                 }
             })
     }

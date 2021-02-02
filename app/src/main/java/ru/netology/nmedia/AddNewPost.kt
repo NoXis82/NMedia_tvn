@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
+import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
@@ -53,8 +54,21 @@ class AddNewPost : Fragment() {
                 viewModel.savePost()
                 viewModel.isHandledBackPressed = ""
                 AndroidUtils.hideKeyboard(requireView())
+
+            }
+        }
+        viewModel.state.observe(viewLifecycleOwner) {
+            if (!it.errorVisible && !it.loading) {
                 findNavController().navigateUp()
             }
+        }
+        viewModel.postCreatedError.observe(viewLifecycleOwner) {
+            Toast.makeText(
+                requireContext(),
+                it.getCreateReadableMessageError(resources),
+                Toast.LENGTH_SHORT
+            )
+                .show()
         }
         viewModel.postCreated.observe(viewLifecycleOwner) {
             viewModel.loadPosts()

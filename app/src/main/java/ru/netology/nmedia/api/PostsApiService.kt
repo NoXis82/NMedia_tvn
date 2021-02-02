@@ -20,6 +20,7 @@ private val logging = HttpLoggingInterceptor()
 
 private val client = OkHttpClient.Builder()
     .connectTimeout(30, TimeUnit.SECONDS)
+    .addInterceptor(PostsInterceptor())
     .addInterceptor(logging)
     .build()
 

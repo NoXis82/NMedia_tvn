@@ -20,6 +20,8 @@
     <string name="description_video_play">Запустить видео</string>
     <string name="message_status_empty">Пусто</string>
     <string name="message_status_error">Ошибка сети</string>
-    <string name="button_retry">Retry</string>
-
+    <string name="button_retry">Повторить</string>
+    <string name="error_server">Ошибка сервера</string>
+    <string name="error_network">Ошибка сети</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
 </resources>

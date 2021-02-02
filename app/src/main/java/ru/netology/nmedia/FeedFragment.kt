@@ -24,6 +24,7 @@ import ru.netology.nmedia.adapter.IOnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 
@@ -95,8 +96,9 @@ class FeedFragment : Fragment() {
         binding.rvPostList.adapter = adapter
         viewModel.state.observe(viewLifecycleOwner) { model ->
             adapter.submitList(model.posts)
-            binding.groupStatus.isVisible = model.error
+            binding.groupStatus.isVisible = model.errorVisible
             binding.tvTextStatusEmpty.isVisible = model.empty
+            binding.tvTextStatusError.text = model.error.getCreateReadableMessageError(resources)
             binding.pbProgress.isVisible = model.loading
             binding.swipeRefreshLayout.isRefreshing = model.refreshing
         }

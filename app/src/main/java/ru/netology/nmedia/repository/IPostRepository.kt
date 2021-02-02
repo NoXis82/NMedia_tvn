@@ -1,6 +1,8 @@
 package ru.netology.nmedia.repository
 
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.model.ApiError
+
 
 interface IPostRepository {
 
@@ -13,7 +15,7 @@ interface IPostRepository {
 
     interface GetAllCallback {
         fun onSuccess(posts: List<Post>)
-        fun onError(e: Exception)
+        fun onError(e: ApiError)
     }
 
     interface LikeByIdCallback {
@@ -28,7 +30,7 @@ interface IPostRepository {
 
     interface SavePostCallback {
         fun onSuccess(post: Post)
-        fun onError(e: Exception)
+        fun onError(e: ApiError)
     }
 
 }
