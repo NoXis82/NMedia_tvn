@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.EditPost.Companion.authorEdit
 import ru.netology.nmedia.EditPost.Companion.contentEdit
 import ru.netology.nmedia.EditPost.Companion.publishedEdit
 import ru.netology.nmedia.databinding.FragmentPostReviewBinding
+import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -36,12 +39,6 @@ class PostReview : Fragment() {
         binding.content.text = arguments?.content
         binding.author.text = arguments?.author
         binding.published.text = arguments?.published
-//        if (arguments?.videoUrl != "") {
-//            binding.frameVideoView.visibility = View.VISIBLE
-//        } else {
-//            binding.frameVideoView.visibility = View.GONE
-//        }
-
         binding.menuPost.setOnClickListener {
             PopupMenu(it.context, it).apply {
                 inflate(R.menu.option_menu_post)
@@ -49,7 +46,19 @@ class PostReview : Fragment() {
                     when (item.itemId) {
                         R.id.postRemove -> {
                             arguments?.idPost?.toLong()?.let { id -> viewModel.removePost(id) }
-                            findNavController().navigateUp()
+                            viewModel.state.observe(viewLifecycleOwner) { model ->
+                                if (!model.loading && !model.errorVisible) {
+                                    findNavController().navigateUp()
+                                }
+                                viewModel.postRemoveError.observe(viewLifecycleOwner) { error ->
+                                    Toast.makeText(
+                                        requireContext(),
+                                        error.getCreateReadableMessageError(resources),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
                             true
                         }
                         R.id.postEdit -> {

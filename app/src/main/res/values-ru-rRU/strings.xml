@@ -24,4 +24,5 @@
     <string name="error_server">Ошибка сервера</string>
     <string name="error_network">Ошибка сети</string>
     <string name="error_unknown">Неизвестная ошибка</string>
+    <string name="body_empty">Пусто</string>
 </resources>

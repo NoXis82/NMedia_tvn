@@ -4,6 +4,7 @@ package ru.netology.nmedia.repository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import ru.netology.nmedia.R
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.ApiError
@@ -28,73 +29,44 @@ class PostRepositoryImpl : IPostRepository {
     override fun unLikeById(id: Long, callback: IPostRepository.LikeByIdCallback) {
         PostsApi.retrofitService.unLikeById(id)
             .enqueue(object : Callback<Post> {
-                override fun onResponse(
-                    call: Call<Post>,
-                    response: Response<Post>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let { callback.onSuccess(it) }
-                    } else {
-                        callback.onError(
-                            RuntimeException(
-                                response.errorBody()?.string().orEmpty()
-                            )
-                        )
-                    }
+                override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                    callback.onSuccess(
+                        response.body()
+                            ?: throw RuntimeException(R.string.body_empty.toString())
+                    )
                 }
 
                 override fun onFailure(call: Call<Post>, t: Throwable) {
-                    callback.onError(RuntimeException(t))
+                    callback.onError(ApiError.fromThrowable(t))
                 }
-
             })
     }
 
     override fun likeById(id: Long, callback: IPostRepository.LikeByIdCallback) {
         PostsApi.retrofitService.likeById(id)
             .enqueue(object : Callback<Post> {
-                override fun onResponse(
-                    call: Call<Post>,
-                    response: Response<Post>
-                ) {
-                    if (response.isSuccessful) {
-                        response.body()?.let { callback.onSuccess(it) }
-                    } else {
-                        callback.onError(
-                            RuntimeException(
-                                response.errorBody()?.string().orEmpty()
-                            )
-                        )
-                    }
+                override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                    callback.onSuccess(
+                        response.body()
+                            ?: throw RuntimeException(R.string.body_empty.toString())
+                    )
                 }
 
                 override fun onFailure(call: Call<Post>, t: Throwable) {
-                    callback.onError(RuntimeException(t))
+                    callback.onError(ApiError.fromThrowable(t))
                 }
-
             })
     }
 
     override fun removePost(id: Long, callback: IPostRepository.RemovePostCallback) {
         PostsApi.retrofitService.removePost(id)
             .enqueue(object : Callback<Unit> {
-                override fun onResponse(
-                    call: Call<Unit>,
-                    response: Response<Unit>
-                ) {
-                    if (response.isSuccessful) {
-                        callback.onSuccess()
-                    } else {
-                        callback.onError(
-                            RuntimeException(
-                                response.errorBody()?.string().orEmpty()
-                            )
-                        )
-                    }
+                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
+                    callback.onSuccess()
                 }
 
                 override fun onFailure(call: Call<Unit>, t: Throwable) {
-                    callback.onError(RuntimeException(t))
+                    callback.onError(ApiError.fromThrowable(t))
                 }
             })
     }
@@ -104,7 +76,10 @@ class PostRepositoryImpl : IPostRepository {
             .enqueue(object : Callback<Post> {
 
                 override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                    callback.onSuccess(response.body() ?: throw RuntimeException(""))
+                    callback.onSuccess(
+                        response.body()
+                            ?: throw RuntimeException(R.string.body_empty.toString())
+                    )
                 }
 
                 override fun onFailure(call: Call<Post>, t: Throwable) {

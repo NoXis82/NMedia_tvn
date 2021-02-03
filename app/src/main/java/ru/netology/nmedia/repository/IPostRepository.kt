@@ -20,12 +20,12 @@ interface IPostRepository {
 
     interface LikeByIdCallback {
         fun onSuccess(post: Post)
-        fun onError(e: Exception)
+        fun onError(e: ApiError)
     }
 
     interface RemovePostCallback {
         fun onSuccess()
-        fun onError(e: Exception)
+        fun onError(e: ApiError)
     }
 
     interface SavePostCallback {

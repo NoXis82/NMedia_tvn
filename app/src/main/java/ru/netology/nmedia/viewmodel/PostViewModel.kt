@@ -38,6 +38,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreatedError = SingleLiveEvent<ApiError>()
     val postCreatedError: LiveData<ApiError>
         get() = _postCreatedError
+    private val _postRemoveError = SingleLiveEvent<ApiError>()
+    val postRemoveError: LiveData<ApiError>
+        get() = _postRemoveError
+    private val _postLikeError = SingleLiveEvent<ApiError>()
+    val postLikeError: LiveData<ApiError>
+        get() = _postLikeError
+
 
     init {
         loadPosts()
@@ -58,10 +65,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
 
-                override fun onError(e: Exception) {
-                    _state.value = FeedModel(errorVisible = true)
-                    Toast.makeText(getApplication(), "${e.message}", Toast.LENGTH_SHORT)
-                        .show()
+                override fun onError(e: ApiError) {
+                    _postLikeError.value = e
                 }
             })
         } else {
@@ -78,9 +83,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     )
                 }
 
-                override fun onError(e: Exception) {
-                    _state.value = FeedModel(errorVisible = true)
-
+                override fun onError(e: ApiError) {
+                    _postLikeError.value = e
                 }
             })
         }
@@ -97,10 +101,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            override fun onError(e: Exception) {
-
+            override fun onError(e: ApiError) {
                 _state.postValue(FeedModel(posts = old))
-                _state.postValue(FeedModel(errorVisible = true))
+                _postRemoveError.value = e
             }
 
         })
@@ -130,7 +133,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: ApiError) {
-                _state.postValue(FeedModel(errorVisible = true, error =  e))
+                _state.postValue(FeedModel(errorVisible = true, error = e))
             }
         })
     }

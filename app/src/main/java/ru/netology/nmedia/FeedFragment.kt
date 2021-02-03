@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -40,7 +41,19 @@ class FeedFragment : Fragment() {
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
             override fun onLike(post: Post) {
-                viewModel.like(post)
+                viewModel.postLikeError.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        it.getCreateReadableMessageError(resources),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+                viewModel.state.observe(viewLifecycleOwner) {
+                    if (!it.errorVisible && !it.loading) {
+                        viewModel.like(post)
+                    }
+                }
             }
 
             override fun onShare(post: Post) {
@@ -57,7 +70,19 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRemove(post: Post) {
-                viewModel.removePost(post.id)
+                viewModel.postRemoveError.observe(viewLifecycleOwner) {
+                    Toast.makeText(
+                        requireContext(),
+                        it.getCreateReadableMessageError(resources),
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+                viewModel.state.observe(viewLifecycleOwner) {
+                    if (!it.errorVisible && !it.loading) {
+                        viewModel.removePost(post.id)
+                    }
+                }
             }
 
             override fun playVideoPost(post: Post) {
