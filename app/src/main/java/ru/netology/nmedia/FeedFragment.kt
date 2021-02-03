@@ -41,6 +41,7 @@ class FeedFragment : Fragment() {
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
             override fun onLike(post: Post) {
+                viewModel.like(post)
                 viewModel.postLikeError.observe(viewLifecycleOwner) {
                     Toast.makeText(
                         requireContext(),
@@ -48,11 +49,6 @@ class FeedFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     )
                         .show()
-                }
-                viewModel.state.observe(viewLifecycleOwner) {
-                    if (!it.errorVisible && !it.loading) {
-                        viewModel.like(post)
-                    }
                 }
             }
 
@@ -70,6 +66,7 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRemove(post: Post) {
+                viewModel.removePost(post.id)
                 viewModel.postRemoveError.observe(viewLifecycleOwner) {
                     Toast.makeText(
                         requireContext(),
@@ -77,11 +74,6 @@ class FeedFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     )
                         .show()
-                }
-                viewModel.state.observe(viewLifecycleOwner) {
-                    if (!it.errorVisible && !it.loading) {
-                        viewModel.removePost(post.id)
-                    }
                 }
             }
 

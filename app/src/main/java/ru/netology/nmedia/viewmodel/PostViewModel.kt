@@ -32,6 +32,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _state
     private val edited = MutableLiveData(empty)
     private val _postsRefreshError = SingleLiveEvent<Unit>()
+
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
@@ -54,6 +55,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         if (post.likedByMe) {
             repository.unLikeById(post.id, object : IPostRepository.LikeByIdCallback {
                 override fun onSuccess(post: Post) {
+
                     _state.postValue(
                         FeedModel(posts = _state.value?.posts.orEmpty().map {
                             if (it.id != post.id) it else it.copy(
