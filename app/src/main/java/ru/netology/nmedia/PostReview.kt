@@ -50,14 +50,14 @@ class PostReview : Fragment() {
                                 if (!model.loading && !model.errorVisible) {
                                     findNavController().navigateUp()
                                 }
-                                viewModel.postRemoveError.observe(viewLifecycleOwner) { error ->
-                                    Toast.makeText(
-                                        requireContext(),
-                                        error.getCreateReadableMessageError(resources),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
+                              //  viewModel.postRemoveError.observe(viewLifecycleOwner) { error ->
+//                                    Toast.makeText(
+//                                        requireContext(),
+//                                        error.getCreateReadableMessageError(resources),
+//                                        Toast.LENGTH_SHORT
+//                                    )
+//                                        .show()
+                              //  }
                             }
                             true
                         }

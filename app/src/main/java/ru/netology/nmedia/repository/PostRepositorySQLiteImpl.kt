@@ -6,7 +6,6 @@ import androidx.lifecycle.map
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.PostEntity
-import ru.netology.nmedia.dto.toPost
 import java.text.SimpleDateFormat
 import java.util.*
 //

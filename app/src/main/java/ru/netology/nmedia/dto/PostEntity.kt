@@ -3,9 +3,9 @@ package ru.netology.nmedia.dto
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
 @Entity
 data class PostEntity(
-    @PrimaryKey(autoGenerate = true)
     val id: Long,
     val author: String,
     val authorAvatar: String,
@@ -15,30 +15,13 @@ data class PostEntity(
     val share: Int = 0,
     val chat: Int = 0,
     val views: Int = 0,
-    val videoUrl: String,
-    val likedByMe: Boolean
+    val likedByMe: Boolean = false
+  //  var attachment: Attachment? = null
 ) {
-    companion object {
-        fun fromPost(post: Post): PostEntity =
-            with(post) {
-                PostEntity(
-                    id,
-                    author,
-                    authorAvatar,
-                    content,
-                    published,
-                    likes,
-                    share,
-                    chat,
-                    views,
-                    videoUrl,
-                    likedByMe
-                )
-            }
-    }
+    @PrimaryKey(autoGenerate = true)
+    var localId: Long = id
 
-}
-    fun PostEntity.toPost(): Post =
+    fun toDto() =
         Post(
             id,
             author,
@@ -49,7 +32,23 @@ data class PostEntity(
             share,
             chat,
             views,
-            videoUrl,
             likedByMe
+            //   attachment
         )
 
+    companion object {
+        fun fromDto(dto: Post) = PostEntity(
+            dto.id,
+            dto.author,
+            dto.authorAvatar,
+            dto.content,
+            dto.published,
+            dto.likes,
+            dto.share,
+            dto.chat,
+            dto.views,
+            dto.likedByMe
+          //  dto.attachment
+        )
+    }
+}

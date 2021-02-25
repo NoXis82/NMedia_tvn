@@ -57,17 +57,26 @@ class PostViewHolder(
                 .timeout(10_000)
                 .circleCrop()
                 .into(avatar)
-            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
-                frameAttachView.visibility = View.VISIBLE
-                ivImageAttachPost.contentDescription = post.attachment?.description
-                Glide.with(ivImageAttachPost)
-                    .load("http://10.0.2.2:9999/images/${post.attachment?.url}")
-                    .placeholder(R.drawable.ic_attach_error_48)
-                    .timeout(10_000)
-                    .into(ivImageAttachPost)
-            } else {
-                frameAttachView.visibility = View.GONE
-            }
+
+//            if(post.id != 0L) {
+//                binding.btnErrorApiLoad.visibility = View.GONE
+//                binding.groupAction.visibility = View.VISIBLE
+//            } else {
+//                binding.btnErrorApiLoad.visibility = View.VISIBLE
+//                binding.groupAction.visibility = View.GONE
+//            }
+
+//            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
+//                frameAttachView.visibility = View.VISIBLE
+//                ivImageAttachPost.contentDescription = post.attachment?.description
+//                Glide.with(ivImageAttachPost)
+//                    .load("http://10.0.2.2:9999/images/${post.attachment?.url}")
+//                    .placeholder(R.drawable.ic_attach_error_48)
+//                    .timeout(10_000)
+//                    .into(ivImageAttachPost)
+//            } else {
+//                frameAttachView.visibility = View.GONE
+//            }
 
             binding.root.setOnClickListener {
                 onInteractionListener.onPostItemClick(post)

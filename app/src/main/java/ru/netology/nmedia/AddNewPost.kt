@@ -54,25 +54,26 @@ class AddNewPost : Fragment() {
                 viewModel.savePost()
                 viewModel.isHandledBackPressed = ""
                 AndroidUtils.hideKeyboard(requireView())
-
-            }
-        }
-        viewModel.state.observe(viewLifecycleOwner) {
-            if (!it.errorVisible && !it.loading) {
                 findNavController().navigateUp()
+//
             }
         }
-        viewModel.postCreatedError.observe(viewLifecycleOwner) {
-            Toast.makeText(
-                requireContext(),
-                it.getCreateReadableMessageError(resources),
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            viewModel.loadPosts()
-        }
+//        viewModel.state.observe(viewLifecycleOwner) {
+//            if (!it.errorVisible && !it.loading) {
+//                findNavController().navigateUp()
+//            }
+//        }
+//        viewModel.postCreatedError.observe(viewLifecycleOwner) {
+//            Toast.makeText(
+//                requireContext(),
+//                it.getCreateReadableMessageError(resources),
+//                Toast.LENGTH_SHORT
+//            )
+//                .show()
+//        }
+//        viewModel.postCreated.observe(viewLifecycleOwner) {
+//            viewModel.loadPosts()
+//        }
         return binding.root
     }
 
