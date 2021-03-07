@@ -15,13 +15,14 @@ data class PostEntity(
     val share: Int = 0,
     val chat: Int = 0,
     val views: Int = 0,
-    val likedByMe: Boolean = false
+    val likedByMe: Boolean = false,
+    val addDao: Boolean
   //  var attachment: Attachment? = null
 ) {
     @PrimaryKey(autoGenerate = true)
     var localId: Long = id
 
-    fun toDto() =
+  fun toDto() =
         Post(
             id,
             author,
@@ -32,7 +33,8 @@ data class PostEntity(
             share,
             chat,
             views,
-            likedByMe
+            likedByMe,
+            addDao
             //   attachment
         )
 
@@ -47,7 +49,8 @@ data class PostEntity(
             dto.share,
             dto.chat,
             dto.views,
-            dto.likedByMe
+            dto.likedByMe,
+            dto.addDao
           //  dto.attachment
         )
     }

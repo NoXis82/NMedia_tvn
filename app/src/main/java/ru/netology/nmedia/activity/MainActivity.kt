@@ -1,10 +1,11 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.activity
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import ru.netology.nmedia.AddNewPost.Companion.textArg
+import ru.netology.nmedia.R
+import ru.netology.nmedia.fragments.AddNewPost.Companion.textArg
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {

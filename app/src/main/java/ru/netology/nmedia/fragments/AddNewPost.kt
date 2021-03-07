@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.fragments
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -9,10 +9,9 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
-import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel

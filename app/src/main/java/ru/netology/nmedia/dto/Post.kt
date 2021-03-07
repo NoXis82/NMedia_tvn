@@ -10,6 +10,7 @@ data class Post(
     val share: Int = 0,
     val chat: Int = 0,
     val views: Int = 0,
-    val likedByMe: Boolean = false
+    val likedByMe: Boolean = false,
+    val addDao: Boolean = false
  //   var attachment: Attachment? = null
 )

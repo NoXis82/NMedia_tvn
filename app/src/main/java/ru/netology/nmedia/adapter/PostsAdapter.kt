@@ -1,22 +1,17 @@
 package ru.netology.nmedia.adapter
 
-
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import androidx.annotation.Dimension
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.enumeration.AttachmentType
+
 
 class PostsAdapter(
     private val onInteractionListener: IOnInteractionListener
@@ -57,14 +52,21 @@ class PostViewHolder(
                 .timeout(10_000)
                 .circleCrop()
                 .into(avatar)
+            if (post.id != 0L) {
+                ivErrorApiLoad.isVisible = false
+                btnRetryPost.isVisible = false
+                menuPost.isVisible = true
+                groupAction.isVisible = true
+            } else {
+                ivErrorApiLoad.isVisible = true
+                btnRetryPost.isVisible = true
+                menuPost.isVisible = false
+                groupAction.isVisible = false
+            }
 
-//            if(post.id != 0L) {
-//                binding.btnErrorApiLoad.visibility = View.GONE
-//                binding.groupAction.visibility = View.VISIBLE
-//            } else {
-//                binding.btnErrorApiLoad.visibility = View.VISIBLE
-//                binding.groupAction.visibility = View.GONE
-//            }
+            btnRetryPost.setOnClickListener {
+                onInteractionListener.onRetryPostSend(post)
+            }
 
 //            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
 //                frameAttachView.visibility = View.VISIBLE

@@ -1,6 +1,5 @@
 package ru.netology.nmedia.repository
 
-
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import ru.netology.nmedia.api.PostsApi
@@ -18,16 +17,16 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
         return netPosts
     }
 
-    override suspend fun unLikeById(id: Long) {
-     //   val netPost = PostsApi.retrofitService.unLikeById(id)
+    override suspend fun unLikeById(id: Long): Post {
+        val netPost = PostsApi.retrofitService.unLikeById(id)
         dao.likeById(id)
-        //return netPost
+        return netPost
     }
 
-    override suspend fun likeById(id: Long) {
-    //    val netPost = PostsApi.retrofitService.likeById(id)
+    override suspend fun likeById(id: Long): Post {
+        val netPost = PostsApi.retrofitService.likeById(id)
         dao.likeById(id)
-        //return netPost
+        return netPost
     }
 
     override suspend fun removePost(id: Long) {
@@ -35,10 +34,12 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
         dao.removeById(id)
     }
 
-    override suspend fun savePost(post: Post): Post {
-        dao.save(PostEntity.fromDto(post))
-
-        return post//PostsApi.retrofitService.savePost(post)
+    override suspend fun savePost(post: Post) {
+        if (!post.addDao) { dao.save(PostEntity.fromDto(post)) }
+        val responsePost = PostsApi.retrofitService.savePost(post)
+        if (responsePost.id != 0L) {
+            dao.insert(PostEntity.fromDto(responsePost))
+        }
     }
 
 }

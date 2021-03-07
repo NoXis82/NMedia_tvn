@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,19 +11,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.post_card.view.*
-import ru.netology.nmedia.EditPost.Companion.authorEdit
-import ru.netology.nmedia.EditPost.Companion.contentEdit
-import ru.netology.nmedia.EditPost.Companion.publishedEdit
-import ru.netology.nmedia.PostReview.Companion.author
-import ru.netology.nmedia.PostReview.Companion.content
-import ru.netology.nmedia.PostReview.Companion.idPost
-import ru.netology.nmedia.PostReview.Companion.published
+import ru.netology.nmedia.R
+import ru.netology.nmedia.fragments.PostReview.Companion.author
+import ru.netology.nmedia.fragments.PostReview.Companion.content
+import ru.netology.nmedia.fragments.PostReview.Companion.idPost
+import ru.netology.nmedia.fragments.PostReview.Companion.published
 import ru.netology.nmedia.adapter.IOnInteractionListener
 import ru.netology.nmedia.adapter.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.dto.PostEntity
+import ru.netology.nmedia.fragments.EditPost.Companion.authorEdit
+import ru.netology.nmedia.fragments.EditPost.Companion.contentEdit
+import ru.netology.nmedia.fragments.EditPost.Companion.publishedEdit
 import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.viewmodel.PostViewModel
 
@@ -34,7 +33,7 @@ class FeedFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentFeedBinding.inflate(layoutInflater)
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
@@ -56,16 +55,16 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRemove(post: Post) {
-//                viewModel.removePost(post.id)
-//                viewModel.postRemoveError.observe(viewLifecycleOwner) {
-//                    Snackbar.make(
-//                        binding.root,
-//                        R.string.message_status_error,
-//                        Snackbar.LENGTH_LONG
-//                    )
-//                        .setAction("Retry") { viewModel.removePost(post.id) }
-//                        .show()
-//                }
+                viewModel.removePost(post.id)
+                viewModel.postRemoveError.observe(viewLifecycleOwner) {
+                    Snackbar.make(
+                        binding.root,
+                        R.string.message_status_error,
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAction("Retry") { viewModel.removePost(post.id) }
+                        .show()
+                }
             }
 
             override fun playVideoPost(post: Post) {
@@ -75,9 +74,10 @@ class FeedFragment : Fragment() {
 
             override fun onPostItemClick(post: Post) {
                 viewModel.editContent(post)
-                findNavController().navigate(R.id.action_feedFragment_to_postReview,
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_postReview,
                     Bundle().apply {
-                   //     idPost = post.id.toString()
+                        idPost = post.id.toString()
                         author = post.author
                         published = post.published
                         content = post.content
@@ -85,35 +85,34 @@ class FeedFragment : Fragment() {
                     })
             }
 
+            override fun onRetryPostSend(post: Post) {
+                viewModel.savePost()
+            }
+
             override fun onEdit(post: Post) {
-                Toast.makeText(requireContext(),
-                    "id: ${post.id}",
-                    Toast.LENGTH_LONG).show()
-//                viewModel.editContent(post)
-//                findNavController().navigate(R.id.action_feedFragment_to_editPost,
-//                    Bundle().apply {
-//                        authorEdit = post.author
-//                        publishedEdit = post.published
-//                        contentEdit = post.content
-//                    })
+                viewModel.editContent(post)
+                findNavController().navigate(R.id.action_feedFragment_to_editPost,
+                    Bundle().apply {
+                        authorEdit = post.author
+                        publishedEdit = post.published
+                        contentEdit = post.content
+                    })
             }
         })
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-
-            binding.root.btn_error_api_load.isVisible = true
-            binding.root.group_action.isVisible = false
-
-            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_LONG)
-                .setAction("Retry") { viewModel.savePost() }
-                .show()
-        }
-
         binding.swipeRefreshLayout.setOnRefreshListener(viewModel::refreshingPosts)
         viewModel.postsRefreshError.observe(viewLifecycleOwner) {
             Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_SHORT)
                 .setAction("Retry") { viewModel.refreshingPosts() }
                 .show()
         }
+
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_LONG)
+                .setAction("Retry") { viewModel.savePost() }
+                .show()
+        }
+
+
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
         }
@@ -129,9 +128,6 @@ class FeedFragment : Fragment() {
         binding.errorButton.setOnClickListener {
             viewModel.loadPosts()
         }
-
-
         return binding.root
     }
-
 }

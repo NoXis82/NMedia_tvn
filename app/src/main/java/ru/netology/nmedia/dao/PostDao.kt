@@ -12,7 +12,7 @@ import java.util.*
 @Dao
 interface PostDao {
 
-    @Query("SELECT * FROM PostEntity ORDER BY id ASC")
+    @Query("SELECT * FROM PostEntity ORDER BY localId DESC")
     fun getAll(): LiveData<List<PostEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -24,21 +24,23 @@ interface PostDao {
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)
 
-    suspend fun save(post: PostEntity) =
-        if (post.localId == 0L) {
-            insert(
-                post.copy(
-                    author = "Student",
-                    authorAvatar = "netology.jpg",
-                    published = SimpleDateFormat(
-                        "dd MMMM yyyy в HH:mm",
-                        Locale.ENGLISH
+    suspend fun save(post: PostEntity) {
+            if (post.id == 0L) {
+                insert(
+                    post.copy(
+                        author = "Student",
+                        authorAvatar = "netology.jpg",
+                        published = SimpleDateFormat(
+                            "dd MMMM yyyy в HH:mm",
+                            Locale.ENGLISH
+                        )
+                            .format(Date()),
+                        addDao = true
                     )
-                        .format(Date())
                 )
-            )
-        } else {
-            updateContentById(post.id, post.content)
+            } else {
+                updateContentById(post.id, post.content)
+            }
         }
 
     @Query(
@@ -49,7 +51,7 @@ interface PostDao {
     )
     suspend fun likeById(id: Long)
 
-    @Query("DELETE FROM PostEntity WHERE localId = :id")
+    @Query("DELETE FROM PostEntity WHERE id = :id")
     suspend fun removeById(id: Long)
 
     @Query(
@@ -58,6 +60,6 @@ interface PostDao {
     )
     fun share(id: Long)
 
-    @Query ("SELECT COUNT (*) FROM PostEntity")
+    @Query("SELECT COUNT (*) FROM PostEntity")
     suspend fun count(): Long
 }

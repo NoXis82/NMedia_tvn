@@ -17,8 +17,6 @@ import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.utils.SingleLiveEvent
 import java.io.IOException
 
-
-
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     var isHandledBackPressed: String = ""
@@ -27,7 +25,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         content = "",
         author = "Student",
         authorAvatar = "nelotogy.jpg",
-        published = ""
+        published = "",
+        addDao = false
     )
     private val repository: IPostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
@@ -65,18 +64,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun like(post: Post) {
-        if (post.likedByMe) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            if (post.likedByMe) {
                 try {
-                  repository.unLikeById(post.id)
+                    repository.unLikeById(post.id)
                 } catch (e: IOException) {
                     _postLikeError.value = Unit
                 }
-            }
-        } else {
-            viewModelScope.launch {
+            } else {
                 try {
-                   repository.likeById(post.id)
+                    repository.likeById(post.id)
                 } catch (e: IOException) {
                     _postLikeError.value = Unit
                 }
@@ -120,17 +117,31 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePost() {
-        viewModelScope.launch {
-            try {
-                edited.value?.let {
-                 repository.savePost(it)
+        edited.value?.let {
+            viewModelScope.launch {
+                try {
+                    repository.savePost(it)
+                    //edited.value = empty
+                } catch (e: IOException) {
+                    edited.value = it
+                    _postCreated.value = Unit
                 }
-            } catch (e: IOException) {
-                _postCreated.value = Unit
             }
         }
-            edited.value = empty
+        edited.value = empty
     }
+
+//    fun retrySavePost(post: Post) {
+//        viewModelScope.launch {
+//            try {
+//                repository.savePost(post)
+//            } catch (e: IOException) {
+//                _postCreated.value = Unit
+//            }
+//        }
+//       // edited.value = empty
+//    }
+
 
     fun changeContent(content: String) {
         val text = content.trim()
