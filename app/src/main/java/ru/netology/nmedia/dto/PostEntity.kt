@@ -2,10 +2,13 @@ package ru.netology.nmedia.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 
 
 @Entity
 data class PostEntity(
+    @PrimaryKey(autoGenerate = true)
+    val localId: Long,
     val id: Long,
     val author: String,
     val authorAvatar: String,
@@ -16,13 +19,11 @@ data class PostEntity(
     val chat: Int = 0,
     val views: Int = 0,
     val likedByMe: Boolean = false,
-    val addDao: Boolean
-  //  var attachment: Attachment? = null
+    val state: PostState = PostState.Success
+    //  var attachment: Attachment? = null
 ) {
-    @PrimaryKey(autoGenerate = true)
-    var localId: Long = id
 
-  fun toDto() =
+    fun toDto() =
         Post(
             id,
             author,
@@ -34,12 +35,13 @@ data class PostEntity(
             chat,
             views,
             likedByMe,
-            addDao
+            state
             //   attachment
         )
 
     companion object {
         fun fromDto(dto: Post) = PostEntity(
+            0,
             dto.id,
             dto.author,
             dto.authorAvatar,
@@ -50,8 +52,17 @@ data class PostEntity(
             dto.chat,
             dto.views,
             dto.likedByMe,
-            dto.addDao
-          //  dto.attachment
+            dto.state
+            //  dto.attachment
         )
+    }
+
+    class PostStateConverter {
+        @TypeConverter
+        fun toPostState(raw: String) : PostState = PostState.values()
+            .find { it.name == raw } ?: PostState.Success
+
+        @TypeConverter
+        fun fromPostState(postState: PostState): String = postState.name
     }
 }

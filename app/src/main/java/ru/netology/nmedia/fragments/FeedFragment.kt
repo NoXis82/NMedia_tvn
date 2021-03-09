@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -103,12 +102,6 @@ class FeedFragment : Fragment() {
         viewModel.postsRefreshError.observe(viewLifecycleOwner) {
             Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_SHORT)
                 .setAction("Retry") { viewModel.refreshingPosts() }
-                .show()
-        }
-
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_LONG)
-                .setAction("Retry") { viewModel.savePost() }
                 .show()
         }
 
