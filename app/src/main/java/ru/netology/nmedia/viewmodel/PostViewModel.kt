@@ -2,7 +2,6 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import android.content.Intent
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,12 +9,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.db.AppDb
-import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.model.ApiError
+import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PostEntity
+import ru.netology.nmedia.dto.PostState
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
+import ru.netology.nmedia.repository.IPostRepository
+import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.utils.SingleLiveEvent
 import java.io.IOException
+
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -25,8 +27,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         content = "",
         author = "Student",
         authorAvatar = "nelotogy.jpg",
-        published = "",
-        addDao = false
+        published = ""
     )
     private val repository: IPostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
@@ -43,14 +44,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postsRefreshError: LiveData<Unit>
         get() = _postsRefreshError
 
-    private val _postCreated = SingleLiveEvent<Unit>()
-    val postCreated: LiveData<Unit>
-        get() = _postCreated
-
-//    private val _postCreatedError = SingleLiveEvent<ApiError>()
-//    val postCreatedError: LiveData<ApiError>
-//        get() = _postCreatedError
-
     private val _postRemoveError = SingleLiveEvent<Unit>()
     val postRemoveError: LiveData<Unit>
         get() = _postRemoveError
@@ -64,14 +57,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun like(post: Post) {
-        viewModelScope.launch {
-            if (post.likedByMe) {
+        if (post.likedByMe) {
+            viewModelScope.launch {
                 try {
                     repository.unLikeById(post.id)
                 } catch (e: IOException) {
                     _postLikeError.value = Unit
                 }
-            } else {
+            }
+        } else {
+            viewModelScope.launch {
                 try {
                     repository.likeById(post.id)
                 } catch (e: IOException) {
@@ -117,31 +112,29 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePost() {
-        edited.value?.let {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            edited.value?.let {
                 try {
-                    repository.savePost(it)
-                    //edited.value = empty
+                    // TODO Использовать WorkManager
+                    val localPost = PostEntity.fromDto(it)
+                        .copy(state = PostState.Progress)
+                        .let { entity ->
+                            val localId = repository.savePost(entity)
+                            entity.copy(localId = localId)
+                        }
+                    edited.value = empty
+                    val networkPost = repository.sendPost(it)
+                    repository.savePost(
+                        localPost.copy(state = PostState.Success, id = networkPost.id)
+                    )
                 } catch (e: IOException) {
-                    edited.value = it
-                    _postCreated.value = Unit
+                    repository.savePost(
+                        PostEntity.fromDto(it).copy(state = PostState.Error)
+                    )
                 }
             }
         }
-        edited.value = empty
     }
-
-//    fun retrySavePost(post: Post) {
-//        viewModelScope.launch {
-//            try {
-//                repository.savePost(post)
-//            } catch (e: IOException) {
-//                _postCreated.value = Unit
-//            }
-//        }
-//       // edited.value = empty
-//    }
-
 
     fun changeContent(content: String) {
         val text = content.trim()

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/common_spacing"
-        tools:context=".fragments.FeedFragment">
+        tools:context=".FeedFragment">
 
         <ImageView
             android:id="@+id/avatar"
@@ -77,43 +77,43 @@
             android:autoLink="web"
             app:layout_constrainedWidth="true"
             android:gravity="top|start"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_goneMarginEnd="@dimen/common_spacing"
             app:layout_constraintBottom_toTopOf="@id/frame_attach_view"
+            app:layout_constraintEnd_toStartOf="@+id/btn_error_api_load"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/margin_end"
             app:layout_constraintTop_toBottomOf="@id/barrierTop"
             tools:text="@sample/posts.json/data/content" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/margin_end"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintGuide_end="24dp"
-            android:orientation="vertical"/>
-
-        <ImageView
-            android:id="@+id/iv_error_api_load"
+        <ImageButton
+            android:id="@+id/btn_error_api_load"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/margin_end"
             app:srcCompat="@drawable/ic_error_outline_48"
             android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/barrierTop"
-            app:layout_constraintBottom_toTopOf="@+id/barrierMid"/>
+            app:layout_constraintBottom_toTopOf="@+id/barrierMid"
+            app:layout_constraintStart_toEndOf="@+id/content" />
 
-        <ImageButton
-            android:id="@+id/btn_retry_post"
+        <ImageView
+            android:id="@+id/iv_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_baseline_done_all_24"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/barrierTop"
             app:layout_constraintBottom_toTopOf="@+id/barrierMid"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_retry_post_48"
-            android:visibility="gone"/>
+            app:layout_constraintStart_toEndOf="@+id/content" />
+
+        <ProgressBar
+            android:id="@+id/pb_progress"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrierTop"
+            app:layout_constraintBottom_toTopOf="@+id/barrierMid"
+            app:layout_constraintStart_toEndOf="@+id/content" />
 
         <FrameLayout
             android:id="@+id/frame_attach_view"

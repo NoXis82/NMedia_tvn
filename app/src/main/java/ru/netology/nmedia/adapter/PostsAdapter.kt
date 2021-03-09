@@ -1,17 +1,23 @@
 package ru.netology.nmedia.adapter
 
+
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.annotation.Dimension
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
-
+import ru.netology.nmedia.enumeration.AttachmentType
 
 class PostsAdapter(
     private val onInteractionListener: IOnInteractionListener
@@ -52,21 +58,12 @@ class PostViewHolder(
                 .timeout(10_000)
                 .circleCrop()
                 .into(avatar)
-            if (post.id != 0L) {
-                ivErrorApiLoad.isVisible = false
-                btnRetryPost.isVisible = false
-                menuPost.isVisible = true
-                groupAction.isVisible = true
-            } else {
-                ivErrorApiLoad.isVisible = true
-                btnRetryPost.isVisible = true
-                menuPost.isVisible = false
-                groupAction.isVisible = false
-            }
 
-            btnRetryPost.setOnClickListener {
-                onInteractionListener.onRetryPostSend(post)
-            }
+            // TODO Обработка нажатий на btnErrorApiLoad
+            binding.btnErrorApiLoad.isVisible = post.state == PostState.Error
+            // TODO Возможно прогресс бар стоит заменить на статичную картинку. В офлайн режиме раздражает
+            binding.pbProgress.isVisible = post.state == PostState.Progress
+            binding.ivStatus.isVisible = post.state == PostState.Success
 
 //            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
 //                frameAttachView.visibility = View.VISIBLE
