@@ -1,47 +1,20 @@
 package ru.netology.nmedia.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import ru.netology.nmedia.dto.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Dao
 interface PostDao {
 
-    @Query("SELECT * FROM PostEntity ORDER BY localId DESC")
+    @Query("SELECT * FROM PostEntity")
     fun getAll(): LiveData<List<PostEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(post: PostEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(posts: List<PostEntity>)
+    suspend fun insert(post: PostEntity): Long
 
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)
-
-    suspend fun save(post: PostEntity) {
-            if (post.id == 0L) {
-                insert(
-                    post.copy(
-                        author = "Student",
-                        authorAvatar = "netology.jpg",
-                        published = SimpleDateFormat(
-                            "dd MMMM yyyy в HH:mm",
-                            Locale.ENGLISH
-                        )
-                            .format(Date()),
-                        addDao = true
-                    )
-                )
-            } else {
-                updateContentById(post.id, post.content)
-            }
-        }
 
     @Query(
         """UPDATE PostEntity SET 
@@ -62,4 +35,18 @@ interface PostDao {
 
     @Query("SELECT COUNT (*) FROM PostEntity")
     suspend fun count(): Long
+
+    @Query("SELECT EXISTS(SELECT * FROM PostEntity WHERE id = :id)")
+    fun isRowIsExist(id: Long): Boolean
+
+    @Transaction
+    suspend fun insertOrUpdate(posts: List<PostEntity>) {
+        posts.forEach {
+            if (isRowIsExist(it.id)) {
+                updateContentById(it.id, it.content)
+            } else {
+                insert(it)
+            }
+        }
+    }
 }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -34,37 +33,24 @@ class FeedFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        var removeId = 0L
+        var checkPost = Post()
         val binding = FragmentFeedBinding.inflate(layoutInflater)
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
             override fun onLike(post: Post) {
+                checkPost = post
                 viewModel.like(post)
-                viewModel.postLikeError.observe(viewLifecycleOwner) {
-                    Snackbar.make(
-                        binding.root,
-                        R.string.message_status_error,
-                        Snackbar.LENGTH_SHORT
-                    )
-                        .setAction("Retry") { viewModel.like(post) }
-                        .show()
-                }
             }
 
             override fun onShare(post: Post) {
+                checkPost = post
                 viewModel.sharePost(post)
             }
 
             override fun onRemove(post: Post) {
+                removeId = post.id
                 viewModel.removePost(post.id)
-                viewModel.postRemoveError.observe(viewLifecycleOwner) {
-                    Snackbar.make(
-                        binding.root,
-                        R.string.message_status_error,
-                        Snackbar.LENGTH_LONG
-                    )
-                        .setAction("Retry") { viewModel.removePost(post.id) }
-                        .show()
-                }
             }
 
             override fun playVideoPost(post: Post) {
@@ -85,8 +71,8 @@ class FeedFragment : Fragment() {
                     })
             }
 
-            override fun onRetryPostSend(post: Post) {
-                viewModel.savePost()
+            override fun onRetrySendPost(post: Post) {
+                  viewModel.retrySendPost(post)
             }
 
             override fun onEdit(post: Post) {
@@ -101,14 +87,28 @@ class FeedFragment : Fragment() {
         })
         binding.swipeRefreshLayout.setOnRefreshListener(viewModel::refreshingPosts)
         viewModel.postsRefreshError.observe(viewLifecycleOwner) {
-            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_SHORT)
+            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_LONG)
                 .setAction("Retry") { viewModel.refreshingPosts() }
                 .show()
         }
 
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            Snackbar.make(binding.root, R.string.message_status_error, Snackbar.LENGTH_LONG)
-                .setAction("Retry") { viewModel.savePost() }
+        viewModel.postRemoveError.observe(viewLifecycleOwner) {
+            Snackbar.make(
+                binding.root,
+                R.string.message_status_error,
+                Snackbar.LENGTH_LONG
+            )
+                .setAction("Retry") { viewModel.removePost(removeId) }
+                .show()
+        }
+
+        viewModel.postLikeError.observe(viewLifecycleOwner) {
+            Snackbar.make(
+                binding.root,
+                R.string.message_status_error,
+                Snackbar.LENGTH_SHORT
+            )
+                .setAction("Retry") { viewModel.like(checkPost) }
                 .show()
         }
 

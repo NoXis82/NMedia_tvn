@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.PostState
 
 
 class PostsAdapter(
@@ -52,21 +53,9 @@ class PostViewHolder(
                 .timeout(10_000)
                 .circleCrop()
                 .into(avatar)
-            if (post.id != 0L) {
-                ivErrorApiLoad.isVisible = false
-                btnRetryPost.isVisible = false
-                menuPost.isVisible = true
-                groupAction.isVisible = true
-            } else {
-                ivErrorApiLoad.isVisible = true
-                btnRetryPost.isVisible = true
-                menuPost.isVisible = false
-                groupAction.isVisible = false
-            }
-
-            btnRetryPost.setOnClickListener {
-                onInteractionListener.onRetryPostSend(post)
-            }
+                btnErrorApiLoad.isVisible = post.state == PostState.Error
+                pbProgress.isVisible = post.state == PostState.Progress
+                ivStatus.isVisible = post.state == PostState.Success
 
 //            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
 //                frameAttachView.visibility = View.VISIBLE
@@ -82,6 +71,10 @@ class PostViewHolder(
 
             binding.root.setOnClickListener {
                 onInteractionListener.onPostItemClick(post)
+            }
+
+            btnErrorApiLoad.setOnClickListener {
+                onInteractionListener.onRetrySendPost(post)
             }
 
             menuPost.setOnClickListener {
@@ -111,10 +104,10 @@ class PostViewHolder(
                 onInteractionListener.onShare(post)
             }
 
-            binding.frameAttachView.setOnClickListener {
+            frameAttachView.setOnClickListener {
                 onInteractionListener.playVideoPost(post)
             }
-            binding.buttonPlay.setOnClickListener {
+            buttonPlay.setOnClickListener {
                 onInteractionListener.playVideoPost(post)
             }
 

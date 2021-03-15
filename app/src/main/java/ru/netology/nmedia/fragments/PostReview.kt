@@ -25,7 +25,7 @@ class PostReview : Fragment() {
         var Bundle.author: String? by StringArg
         var Bundle.published: String? by StringArg
         var Bundle.content: String? by StringArg
-    //   var Bundle.videoUrl: String? by StringArg
+        //   var Bundle.videoUrl: String? by StringArg
     }
 
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
@@ -49,14 +49,6 @@ class PostReview : Fragment() {
                                 if (!model.loading && !model.errorVisible) {
                                     findNavController().navigateUp()
                                 }
-                              //  viewModel.postRemoveError.observe(viewLifecycleOwner) { error ->
-//                                    Toast.makeText(
-//                                        requireContext(),
-//                                        error.getCreateReadableMessageError(resources),
-//                                        Toast.LENGTH_SHORT
-//                                    )
-//                                        .show()
-                              //  }
                             }
                             true
                         }
