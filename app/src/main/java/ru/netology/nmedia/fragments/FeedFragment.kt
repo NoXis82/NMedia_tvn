@@ -1,14 +1,17 @@
 package ru.netology.nmedia.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.PostReview.Companion.author
@@ -72,10 +75,11 @@ class FeedFragment : Fragment() {
             }
 
             override fun onRetrySendPost(post: Post) {
-                  viewModel.retrySendPost(post)
+                viewModel.retrySendPost(post)
             }
 
             override fun onEdit(post: Post) {
+
                 viewModel.editContent(post)
                 findNavController().navigate(R.id.action_feedFragment_to_editPost,
                     Bundle().apply {
@@ -112,6 +116,18 @@ class FeedFragment : Fragment() {
                 .show()
         }
 
+        binding.fabExtended.setOnClickListener {
+            viewModel.getNewerPosts()
+            adapter.notifyDataSetChanged()
+            binding.rvPostList.layoutManager?.smoothScrollToPosition(
+                binding.rvPostList,
+               RecyclerView.State(),
+               0
+            )
+        }
+        viewModel.newPosts.observe(viewLifecycleOwner) {
+            viewModel.checkNewPost(it)
+        }
 
         binding.fab.setOnClickListener {
             findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
@@ -123,6 +139,7 @@ class FeedFragment : Fragment() {
             binding.tvTextStatusError.text = model.error.getCreateReadableMessageError(resources)
             binding.pbProgress.isVisible = model.loading
             binding.swipeRefreshLayout.isRefreshing = model.refreshing
+            binding.fabExtended.isVisible = model.visibleFab
         }
         viewModel.posts.observe(viewLifecycleOwner, adapter::submitList)
         binding.errorButton.setOnClickListener {

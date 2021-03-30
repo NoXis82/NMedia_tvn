@@ -71,6 +71,19 @@
                 tools:listitem="@layout/post_card" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab_extended"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/common_spacing"
+            android:text="@string/title_new_message"
+            app:icon="@drawable/ic_arrow_upward_24"
+            android:focusable="true"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -84,5 +97,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add_24dp" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

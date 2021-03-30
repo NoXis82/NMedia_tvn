@@ -5,5 +5,6 @@ data class FeedModel(
     val errorVisible: Boolean = false,
     val error: ApiError? = null,
     val empty: Boolean = false,
-    val refreshing: Boolean = false
+    val refreshing: Boolean = false,
+    val visibleFab: Boolean = false
 )

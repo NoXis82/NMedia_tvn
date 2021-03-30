@@ -2,12 +2,12 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import android.content.Intent
-import android.media.AsyncPlayer
+import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.db.AppDb
@@ -28,16 +28,17 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         published = ""
     )
     private var localId = 0L
+    private val listTest = listOf<Post>()
     private val repository: IPostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
     )
     private val _state = MutableLiveData(FeedModel())
     val state: LiveData<FeedModel>
         get() = _state
-
     private val edited = MutableLiveData(empty)
+
     val posts: LiveData<List<Post>>
-        get() = repository.posts
+        get() = repository.posts.asLiveData(Dispatchers.Default)
 
     private val _postsRefreshError = SingleLiveEvent<Unit>()
     val postsRefreshError: LiveData<Unit>
@@ -51,8 +52,33 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postLikeError: LiveData<Unit>
         get() = _postLikeError
 
+    val newPosts = posts.switchMap {
+        repository.getNewerCount(it.firstOrNull()?.id ?: 0L)
+            .asLiveData()
+    }
+
     init {
         loadPosts()
+    }
+
+    fun checkNewPost(count: Int) {
+        if (count > 0) {
+            _state.value = FeedModel(visibleFab = true)
+        }
+    }
+
+    fun getNewerPosts() {
+        viewModelScope.launch {
+            try {
+                val newerPosts = repository.getNewerList(posts.value?.firstOrNull()?.id ?: 0L)
+                newerPosts.collect { posts ->
+                    repository.sendNewer(posts)
+                }
+                _state.value = FeedModel(visibleFab = false)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun like(post: Post) {

@@ -16,8 +16,6 @@ class PostsInterceptor : Interceptor {
                         ApiError.ServerError
                     )
                     else -> throw ApiException(ApiError.UnknownException)
-
                 }
-
             }
 }

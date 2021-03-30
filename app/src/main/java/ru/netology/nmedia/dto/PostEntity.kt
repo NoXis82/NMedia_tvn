@@ -17,7 +17,8 @@ data class PostEntity(
     val chat: Int = 0,
     val views: Int = 0,
     val likedByMe: Boolean = false,
-    val state: PostState = PostState.Success
+    val state: PostState = PostState.Success,
+    val visibleState: Boolean = false
   //  var attachment: Attachment? = null
 ) {
 
@@ -37,6 +38,8 @@ data class PostEntity(
             //   attachment
         )
 
+
+
     companion object {
         fun fromDto(dto: Post) = PostEntity(
             0,
@@ -49,8 +52,7 @@ data class PostEntity(
             dto.share,
             dto.chat,
             dto.views,
-            dto.likedByMe,
-            dto.state
+            dto.likedByMe
           //  dto.attachment
         )
     }
@@ -64,5 +66,5 @@ data class PostEntity(
     }
 }
 
-
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity.Companion::fromDto)
 

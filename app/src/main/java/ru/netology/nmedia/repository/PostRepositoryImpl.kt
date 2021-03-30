@@ -1,14 +1,17 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
+
+import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.PostEntity
+import ru.netology.nmedia.dto.toEntity
 
 class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
-    override val posts: LiveData<List<Post>>
+    override val posts: Flow<List<Post>>
         get() = dao.getAll().map {
             it.sortedWith(Comparator { o1, o2 ->
                 when {
@@ -20,6 +23,26 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
             })
                 .map(PostEntity::toDto)
         }
+            .flowOn(Dispatchers.Default)
+
+    override fun getNewerCount(id: Long): Flow<Int> = flow {
+        while (true) {
+            val newer = PostsApi.retrofitService.getNewer(id)
+            emit(newer.size)
+        }
+    }
+        .catch { e -> e.printStackTrace() }
+        .flowOn(Dispatchers.Default)
+
+    override fun getNewerList(id: Long): Flow<List<Post>> = flow {
+       // while (true) {
+            val posts = PostsApi.retrofitService.getNewer(id)
+             emit(posts)
+        //}
+    }
+        .catch { e -> e.printStackTrace() }
+        .flowOn(Dispatchers.Default)
+
 
     override suspend fun getAll(): List<Post> {
         val netPosts = PostsApi.retrofitService.getAll()
@@ -42,8 +65,14 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
         dao.removeById(id)
     }
 
+    override suspend fun sendNewer(posts: List<Post>) =
+        dao.insertOrUpdate(posts.map(PostEntity.Companion::fromDto))
+
     override suspend fun savePost(post: PostEntity) = dao.insert(post)
 
     override suspend fun sendPost(post: Post): Post = PostsApi.retrofitService.savePost(post)
+
+    override suspend fun count(): Int = dao.count()
+
 
 }
