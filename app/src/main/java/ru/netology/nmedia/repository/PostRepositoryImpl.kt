@@ -1,138 +1,78 @@
 package ru.netology.nmedia.repository
 
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
+import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
-import java.io.IOException
-import java.util.concurrent.TimeUnit
+import ru.netology.nmedia.dto.PostEntity
+import ru.netology.nmedia.dto.toEntity
 
-class PostRepositoryImpl : IPostRepository {
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .build()
-    private val typeToken = object : TypeToken<List<Post>>() {}
-    private val gson = Gson()
-
-    companion object {
-        private const val BASE_URL = "http://10.0.2.2:9999"
-        private val jsonType = "application/json".toMediaType()
-    }
-
-    override fun getAllAsync(callback: IPostRepository.GetAllCallback) {
-        val request: Request = Request.Builder()
-            .url("${BASE_URL}/api/posts")
-            .build()
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.use {
-                        try {
-                            callback.onSuccess(gson.fromJson(it.string(), typeToken.type))
-                        } catch (e: Exception) {
-                            callback.onError(e)
-                        }
-                    }
+class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
+    override val posts: Flow<List<Post>>
+        get() = dao.getAll().map {
+            it.sortedWith(Comparator { o1, o2 ->
+                when {
+                    o1.id == 0L && o2.id == 0L -> o1.localId.compareTo(o2.localId)
+                    o1.id == 0L -> -1
+                    o2.id == 0L -> 1
+                    else -> -o1.id.compareTo(o2.id)
                 }
             })
+                .map(PostEntity::toDto)
+        }
+            .flowOn(Dispatchers.Default)
+
+    override fun getNewerCount(id: Long): Flow<Int> = flow {
+        while (true) {
+            val newer = PostsApi.retrofitService.getNewer(id)
+            emit(newer.size)
+        }
+    }
+        .catch { e -> e.printStackTrace() }
+        .flowOn(Dispatchers.Default)
+
+    override fun getNewerList(id: Long): Flow<List<Post>> = flow {
+       // while (true) {
+            val posts = PostsApi.retrofitService.getNewer(id)
+             emit(posts)
+        //}
+    }
+        .catch { e -> e.printStackTrace() }
+        .flowOn(Dispatchers.Default)
+
+
+    override suspend fun getAll(): List<Post> {
+        val netPosts = PostsApi.retrofitService.getAll()
+        dao.insertOrUpdate(netPosts.map(PostEntity.Companion::fromDto))
+        return netPosts
     }
 
-    override fun unLikeById(id: Long, callback: IPostRepository.LikeByIdCallback) {
-        val requestQ: Request =
-            Request.Builder()
-                .delete()
-                .url("${BASE_URL}/api/posts/$id/likes")
-                .build()
-        client.newCall(requestQ)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.use {
-                        try {
-                            callback.onSuccess(gson.fromJson(it.string(), Post::class.java))
-                        } catch (e: IOException) {
-                            callback.onError(e)
-                        }
-                    }
-                }
-            })
+    override suspend fun unLikeById(id: Long) {
+        PostsApi.retrofitService.unLikeById(id)
+        dao.likeById(id)
     }
 
-    override fun likeById(post: Post, callback: IPostRepository.LikeByIdCallback) {
-        val requestLike: Request =
-            Request.Builder()
-                .post(gson.toJson(post).toRequestBody(jsonType))
-                .url("${BASE_URL}/api/posts/${post.id}/likes")
-                .build()
-
-        client.newCall(requestLike)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.use {
-                        try {
-                            callback.onSuccess(gson.fromJson(it.string(), Post::class.java))
-                        } catch (e: IOException) {
-                            callback.onError(e)
-                        }
-                    }
-                }
-            })
+    override suspend fun likeById(id: Long) {
+        PostsApi.retrofitService.likeById(id)
+        dao.likeById(id)
     }
 
-    override fun removePost(id: Long, callback: IPostRepository.RemovePostCallback) {
-        val request: Request = Request.Builder()
-            .delete()
-            .url("${BASE_URL}/api/posts/$id")
-            .build()
-
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    callback.onSuccess()
-                }
-            })
+    override suspend fun removePost(id: Long) {
+        PostsApi.retrofitService.removePost(id)
+        dao.removeById(id)
     }
 
-    override fun savePost(post: Post, callback: IPostRepository.SavePostCallback) {
-        val request: Request = Request.Builder()
-            .post(gson.toJson(post).toRequestBody(jsonType))
-            .url("${BASE_URL}/api/posts")
-            .build()
+    override suspend fun sendNewer(posts: List<Post>) =
+        dao.insertOrUpdate(posts.map(PostEntity.Companion::fromDto))
 
-        client.newCall(request)
-            .enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    callback.onError(e)
-                }
+    override suspend fun savePost(post: PostEntity) = dao.insert(post)
 
-                override fun onResponse(call: Call, response: Response) {
-                    response.body?.use {
-                        try {
-                            callback.onSuccess(gson.fromJson(it.string(), Post::class.java))
-                        } catch (e: IOException) {
-                            callback.onError(e)
-                        }
-                    }
-                }
-            })
-    }
+    override suspend fun sendPost(post: Post): Post = PostsApi.retrofitService.savePost(post)
+
+    override suspend fun count(): Int = dao.count()
+
 
 }

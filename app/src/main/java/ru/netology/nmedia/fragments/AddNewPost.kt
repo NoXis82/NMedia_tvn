@@ -1,4 +1,4 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.fragments
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -9,8 +9,8 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.utils.StringArg
@@ -55,9 +55,6 @@ class AddNewPost : Fragment() {
                 AndroidUtils.hideKeyboard(requireView())
                 findNavController().navigateUp()
             }
-        }
-        viewModel.postCreated.observe(viewLifecycleOwner) {
-            viewModel.loadPosts()
         }
         return binding.root
     }

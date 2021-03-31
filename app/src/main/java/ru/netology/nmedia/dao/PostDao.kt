@@ -1,50 +1,56 @@
 package ru.netology.nmedia.dao
 
-import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.dto.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Dao
 interface PostDao {
-    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
-    fun getAll(): LiveData<List<PostEntity>>
 
-    @Insert
-    fun insert(post: PostEntity)
+    @Query("SELECT * FROM PostEntity WHERE visibleState = 1")
+    fun getAll(): Flow<List<PostEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(post: PostEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNewer(posts: List<PostEntity>)
+
 
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
-    fun updateContentById(id: Long, content: String)
+    suspend fun updateContentById(id: Long, content: String)
 
-
-    fun save(post: PostEntity) =
-        if (post.id == 0L) {
-            val dateFormat = SimpleDateFormat("dd MMMM yyyy в HH:mm", Locale.ENGLISH)
-            val currentDate = dateFormat.format(Date())
-            insert(
-                post.copy(
-                    author = "Этот пост создан мной",
-                    published = currentDate
-                )
-            )
-        } else {
-            updateContentById(post.id, post.content)
-        }
-
-    @Query("""UPDATE PostEntity SET 
+    @Query(
+        """UPDATE PostEntity SET 
                     likes = likes + CASE WHEN likedByMe THEN -1 ELSE 1 END, 
                   likedByMe = CASE WHEN likedByMe THEN 0 ELSE 1 END
-                  WHERE id = :id""")
-    fun likeById(id: Long)
+                  WHERE id = :id"""
+    )
+    suspend fun likeById(id: Long)
 
     @Query("DELETE FROM PostEntity WHERE id = :id")
-    fun removeById(id: Long)
+    suspend fun removeById(id: Long)
 
-    @Query("""UPDATE PostEntity SET
-            share = share + 1 WHERE id = :id""")
+    @Query(
+        """UPDATE PostEntity SET
+            share = share + 1 WHERE id = :id"""
+    )
     fun share(id: Long)
 
+    @Query("SELECT COUNT (*) FROM PostEntity WHERE visibleState = 0")
+    suspend fun count(): Int
+
+    @Query("SELECT EXISTS(SELECT * FROM PostEntity WHERE id = :id)")
+    fun isRowIsExist(id: Long): Boolean
+
+    @Transaction
+    suspend fun insertOrUpdate(posts: List<PostEntity>) {
+        posts.forEach {
+            if (isRowIsExist(it.id)) {
+                updateContentById(it.id, it.content)
+            } else {
+                insert(it.copy(visibleState = true))
+            }
+        }
+    }
 }

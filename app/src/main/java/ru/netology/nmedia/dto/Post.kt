@@ -1,24 +1,18 @@
 package ru.netology.nmedia.dto
 
-import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.enumeration.PostState
 
 data class Post(
-    val id: Long,
-    val author: String,
-    val authorAvatar: String,
-    val content: String,
-    val published: String,
+    val id: Long = 0,
+    val author: String = "",
+    val authorAvatar: String = "",
+    val content: String = "",
+    val published: String = "",
     val likes: Int = 0,
     val share: Int = 0,
     val chat: Int = 0,
     val views: Int = 0,
-    val videoUrl: String,
     val likedByMe: Boolean = false,
-    var attachment: Attachment? = null
-)
-
-data class Attachment(
-    val url: String,
-    val description: String,
-    val type: AttachmentType
+    val state: PostState = PostState.Success
+ //   var attachment: Attachment? = null
 )
