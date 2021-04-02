@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_feedFragment_to_postReview"
             app:destination="@id/postReview" />
+        <action
+            android:id="@+id/action_feedFragment_to_imageViewFragment"
+            app:destination="@id/imageViewFragment" />
     </fragment>
 
     <fragment
@@ -44,6 +47,11 @@
             android:id="@+id/action_postReview_to_editPost"
             app:destination="@id/editPost" />
     </fragment>
+    <fragment
+        android:id="@+id/imageViewFragment"
+        android:name="ru.netology.nmedia.ImageViewFragment"
+        android:label="fragment_image_view"
+        tools:layout="@layout/fragment_image_view" />
 
 
 </navigation>

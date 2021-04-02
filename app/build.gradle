@@ -39,7 +39,7 @@ android {
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
-            buildConfigField "String", "BASE_URL", '"http://10.0.2.2:9999/api/"'
+            buildConfigField "String", "BASE_URL", '"http://172.20.10.7:9999/api/"'
         }
     }
 }
@@ -63,6 +63,7 @@ dependencies {
     def retrofitgson_version = "2.9.0"
     def okhttploggin_version = "4.9.0"
     def glide_version = "4.11.0"
+    def imagepicker_version = "1.8"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swiperefreshlayout_version"
@@ -78,6 +79,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+    implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"

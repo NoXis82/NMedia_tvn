@@ -13,6 +13,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import ru.netology.nmedia.ImageViewFragment.Companion.urlImage
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.PostReview.Companion.author
 import ru.netology.nmedia.fragments.PostReview.Companion.content
@@ -56,11 +57,6 @@ class FeedFragment : Fragment() {
                 viewModel.removePost(post.id)
             }
 
-            override fun playVideoPost(post: Post) {
-                //       val videoIntent = Intent(Intent.ACTION_VIEW, Uri.parse(post.videoUrl))
-                //       startActivity(videoIntent)
-            }
-
             override fun onPostItemClick(post: Post) {
                 viewModel.editContent(post)
                 findNavController().navigate(
@@ -76,6 +72,15 @@ class FeedFragment : Fragment() {
 
             override fun onRetrySendPost(post: Post) {
                 viewModel.retrySendPost(post)
+            }
+
+            override fun onClickImage(post: Post) {
+                findNavController().navigate(
+                    R.id.action_feedFragment_to_imageViewFragment,
+                    Bundle().apply {
+                        urlImage = post.attachment?.url
+                    }
+                )
             }
 
             override fun onEdit(post: Post) {
@@ -121,8 +126,8 @@ class FeedFragment : Fragment() {
             adapter.notifyDataSetChanged()
             binding.rvPostList.layoutManager?.smoothScrollToPosition(
                 binding.rvPostList,
-               RecyclerView.State(),
-               0
+                RecyclerView.State(),
+                0
             )
         }
         viewModel.newPosts.observe(viewLifecycleOwner) {

@@ -3,10 +3,10 @@ package ru.netology.nmedia.db
 import android.content.Context
 import androidx.room.*
 import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dto.PostEntity
+import ru.netology.nmedia.dto.*
 
 @Database(entities = [PostEntity::class], version = 1, exportSchema = false)
-@TypeConverters(value = [PostEntity.PostStateConverter::class])
+@TypeConverters(value = [PostStateConverter::class, Converters::class])
 abstract class AppDb : RoomDatabase() {
     abstract fun postDao(): PostDao
 
