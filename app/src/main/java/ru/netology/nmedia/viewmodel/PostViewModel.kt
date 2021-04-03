@@ -2,11 +2,10 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
@@ -16,6 +15,7 @@ import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.utils.SingleLiveEvent
+import java.io.File
 import java.io.IOException
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -27,15 +27,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         authorAvatar = "nelotogy.jpg",
         published = ""
     )
+    private val noPhoto = PhotoModel()
     private var localId = 0L
-    private val listTest = listOf<Post>()
     private val repository: IPostRepository = PostRepositoryImpl(
         AppDb.getInstance(application).postDao()
     )
     private val _state = MutableLiveData(FeedModel())
     val state: LiveData<FeedModel>
         get() = _state
+
     private val edited = MutableLiveData(empty)
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
 
     val posts: LiveData<List<Post>>
         get() = repository.posts.asLiveData(Dispatchers.Default)
@@ -57,8 +61,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             .asLiveData()
     }
 
+    private val _photo = MutableLiveData(noPhoto)
+    val photo: LiveData<PhotoModel>
+        get() = _photo
+
     init {
         loadPosts()
+    }
+
+    fun changePhoto(uri: Uri?, file: File?) {
+        _photo.value = PhotoModel(uri, file)
     }
 
     fun checkNewPost(count: Int) {
@@ -144,26 +156,35 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun savePost() {
         viewModelScope.launch {
             edited.value?.let {
+                _postCreated.value = Unit
                 try {
-                    val localPost = PostEntity.fromDto(it)
-                        .copy(state = PostState.Progress)
-                    if (it.id == 0L) {
-                        localPost.let { entity ->
-                            localId = repository.savePost(entity)
-                            entity.copy(localId = localId, id = localId)
+                    when (_photo.value) {
+                        noPhoto -> {
+                            val localPost = PostEntity.fromDto(it)
+                                .copy(state = PostState.Progress)
+                            if (it.id == 0L) {
+                                localPost.let { entity ->
+                                    localId = repository.savePost(entity)
+                                    entity.copy(localId = localId, id = localId)
+                                }
+                            } else {
+                                localId = it.id
+                            }
+                            val networkPost = repository.sendPost(it)
+                            repository.savePost(
+                                localPost.copy(
+                                    state = PostState.Success,
+                                    id = networkPost.id,
+                                    localId = localId
+                                )
+                            )
                         }
-                    } else {
-                        localId = it.id
+                        else -> {
+                            _photo.value?.file?.let { file ->
+                                repository.saveWithAttachment(it, MediaUpload(file))
+                            }
+                        }
                     }
-                    val networkPost = repository.sendPost(it)
-                    repository.savePost(
-                        localPost.copy(
-                            state = PostState.Success,
-                            id = networkPost.id,
-                            localId = localId
-                        )
-                    )
-                    edited.value = empty
                 } catch (e: IOException) {
                     repository.savePost(
                         PostEntity.fromDto(it)
@@ -176,6 +197,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
+        edited.value = empty
+        _photo.value = noPhoto
     }
 
     fun changeContent(content: String) {

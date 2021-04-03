@@ -14,7 +14,6 @@ import ru.netology.nmedia.databinding.FragmentEditPostBinding
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
 class EditPost : Fragment() {
     companion object {
         var Bundle.authorEdit: String? by StringArg
@@ -23,6 +22,7 @@ class EditPost : Fragment() {
     }
 
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,5 +50,4 @@ class EditPost : Fragment() {
         }
         return binding.root
     }
-
 }

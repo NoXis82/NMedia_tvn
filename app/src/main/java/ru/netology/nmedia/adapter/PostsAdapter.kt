@@ -1,6 +1,7 @@
 package ru.netology.nmedia.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.core.view.isVisible
@@ -11,8 +12,8 @@ import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.PostState
-
 
 class PostsAdapter(
     private val onInteractionListener: IOnInteractionListener
@@ -48,29 +49,32 @@ class PostViewHolder(
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
             Glide.with(avatar)
-                .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
+                .load("http://172.20.10.7:9999/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_account_circle_48)
                 .timeout(10_000)
                 .circleCrop()
                 .into(avatar)
-                btnErrorApiLoad.isVisible = post.state == PostState.Error
-                pbProgress.isVisible = post.state == PostState.Progress
-                ivStatus.isVisible = post.state == PostState.Success
+            btnErrorApiLoad.isVisible = post.state == PostState.Error
+            pbProgress.isVisible = post.state == PostState.Progress
+            ivStatus.isVisible = post.state == PostState.Success
 
-//            if (post.attachment != null && post.attachment?.type == AttachmentType.IMAGE) {
-//                frameAttachView.visibility = View.VISIBLE
-//                ivImageAttachPost.contentDescription = post.attachment?.description
-//                Glide.with(ivImageAttachPost)
-//                    .load("http://10.0.2.2:9999/images/${post.attachment?.url}")
-//                    .placeholder(R.drawable.ic_attach_error_48)
-//                    .timeout(10_000)
-//                    .into(ivImageAttachPost)
-//            } else {
-//                frameAttachView.visibility = View.GONE
-//            }
+            if (post.attachment != null && post.attachment.type == AttachmentType.IMAGE) {
+                frameAttachView.visibility = View.VISIBLE
+                Glide.with(ivImageAttachPost)
+                    .load("http://172.20.10.7:9999/media/${post.attachment.url}")
+                    .placeholder(R.drawable.ic_attach_error_48)
+                    .timeout(10_000)
+                    .into(ivImageAttachPost)
+            } else {
+                frameAttachView.visibility = View.GONE
+            }
 
             binding.root.setOnClickListener {
                 onInteractionListener.onPostItemClick(post)
+            }
+
+            binding.ivImageAttachPost.setOnClickListener {
+                onInteractionListener.onClickImage(post)
             }
 
             btnErrorApiLoad.setOnClickListener {
@@ -95,22 +99,12 @@ class PostViewHolder(
                     }
                 }.show()
             }
-
             likes.setOnClickListener {
                 onInteractionListener.onLike(post)
-
             }
             share.setOnClickListener {
                 onInteractionListener.onShare(post)
             }
-
-            frameAttachView.setOnClickListener {
-                onInteractionListener.playVideoPost(post)
-            }
-            buttonPlay.setOnClickListener {
-                onInteractionListener.playVideoPost(post)
-            }
-
         }
     }
 }

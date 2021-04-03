@@ -1,6 +1,7 @@
 package ru.netology.nmedia.dto
 
 import androidx.room.*
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.PostState
 
 @Entity
@@ -18,11 +19,11 @@ data class PostEntity(
     val views: Int = 0,
     val likedByMe: Boolean = false,
     val state: PostState = PostState.Success,
-    val visibleState: Boolean = false
-  //  var attachment: Attachment? = null
+    @Embedded
+    var attachment: AttachmentEmbeddable?
 ) {
 
-  fun toDto() =
+    fun toDto() =
         Post(
             id,
             author,
@@ -34,10 +35,9 @@ data class PostEntity(
             chat,
             views,
             likedByMe,
-            state
-            //   attachment
+            state,
+            attachment?.toDto()
         )
-
 
 
     companion object {
@@ -52,19 +52,41 @@ data class PostEntity(
             dto.share,
             dto.chat,
             dto.views,
-            dto.likedByMe
-          //  dto.attachment
-        )
-    }
-    class PostStateConverter {
-        @TypeConverter
-        fun toPostState(raw: String) : PostState = PostState.values()
-            .find { it.name == raw } ?: PostState.Success
-
-        @TypeConverter
-        fun fromPostState(postState: PostState): String = postState.name
+            dto.likedByMe,
+            dto.state,
+            AttachmentEmbeddable.fromDto(dto.attachment))
     }
 }
 
-fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity.Companion::fromDto)
+class PostStateConverter {
+    @TypeConverter
+    fun toPostState(raw: String): PostState = PostState.values()
+        .find { it.name == raw } ?: PostState.Success
 
+    @TypeConverter
+    fun fromPostState(postState: PostState): String = postState.name
+}
+
+
+data class AttachmentEmbeddable(
+    var url: String,
+    var type: AttachmentType
+) {
+    fun toDto() = Attachment(url, type)
+
+    companion object {
+        fun fromDto(dto: Attachment?) = dto?.let {
+            AttachmentEmbeddable(it.url, it.type)
+        }
+    }
+}
+
+class Converters {
+    @TypeConverter
+    fun toAttachmentType(value: String) = enumValueOf<AttachmentType>(value)
+    @TypeConverter
+    fun fromAttachmentType(value: AttachmentType) = value.name
+}
+
+fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity.Companion::fromDto)
+fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)
