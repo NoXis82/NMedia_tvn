@@ -49,7 +49,7 @@
     </fragment>
     <fragment
         android:id="@+id/imageViewFragment"
-        android:name="ru.netology.nmedia.ImageViewFragment"
+        android:name="ru.netology.nmedia.fragments.ImageViewFragment"
         android:label="fragment_image_view"
         tools:layout="@layout/fragment_image_view" />
 

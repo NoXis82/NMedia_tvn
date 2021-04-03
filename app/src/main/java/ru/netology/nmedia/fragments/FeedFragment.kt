@@ -1,11 +1,9 @@
 package ru.netology.nmedia.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,7 +11,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import ru.netology.nmedia.ImageViewFragment.Companion.urlImage
+import ru.netology.nmedia.fragments.ImageViewFragment.Companion.urlImage
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.PostReview.Companion.author
 import ru.netology.nmedia.fragments.PostReview.Companion.content

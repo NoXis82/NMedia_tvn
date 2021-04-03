@@ -4,6 +4,7 @@ import ru.netology.nmedia.enumeration.PostState
 
 data class Post(
     val id: Long = 0,
+    val authorId: Long = 0,
     val author: String = "",
     val authorAvatar: String = "",
     val content: String = "",
@@ -14,5 +15,6 @@ data class Post(
     val views: Int = 0,
     val likedByMe: Boolean = false,
     val state: PostState = PostState.Success,
-    val attachment: Attachment? = null
+    val attachment: Attachment? = null,
+    val ownedByMe: Boolean = false
 )

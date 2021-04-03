@@ -3,12 +3,16 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
+import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.db.AppDb
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.enumeration.PostState
@@ -29,9 +33,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     )
     private val noPhoto = PhotoModel()
     private var localId = 0L
-    private val repository: IPostRepository = PostRepositoryImpl(
-        AppDb.getInstance(application).postDao()
-    )
+    private val repository = NMediaApplication.repository
     private val _state = MutableLiveData(FeedModel())
     val state: LiveData<FeedModel>
         get() = _state
@@ -41,8 +43,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
+    @ExperimentalCoroutinesApi
     val posts: LiveData<List<Post>>
-        get() = repository.posts.asLiveData(Dispatchers.Default)
+        get() = NMediaApplication.appAuth
+            .authStateFlow
+            .flatMapLatest { (myId, _) ->
+                repository.posts
+                    .map { posts ->
+                        posts.map { it.copy(ownedByMe = it.authorId == myId) }
+                    }
+            }.asLiveData(Dispatchers.Default)
 
     private val _postsRefreshError = SingleLiveEvent<Unit>()
     val postsRefreshError: LiveData<Unit>
@@ -56,6 +66,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postLikeError: LiveData<Unit>
         get() = _postLikeError
 
+    @ExperimentalCoroutinesApi
     val newPosts = posts.switchMap {
         repository.getNewerCount(it.firstOrNull()?.id ?: 0L)
             .asLiveData()

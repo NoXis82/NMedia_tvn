@@ -31,4 +31,7 @@
     <string name="description_select_photo">Select photo</string>
     <string name="description_take_photo">Take photo</string>
     <string name="menu_save">Save</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
 </resources>
