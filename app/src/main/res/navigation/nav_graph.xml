@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_feedFragment_to_imageViewFragment"
             app:destination="@id/imageViewFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_signInFragment"
+            app:destination="@id/signInFragment" />
     </fragment>
 
     <fragment
@@ -52,6 +55,11 @@
         android:name="ru.netology.nmedia.fragments.ImageViewFragment"
         android:label="fragment_image_view"
         tools:layout="@layout/fragment_image_view" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="ru.netology.nmedia.fragments.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" />
 
 
 </navigation>

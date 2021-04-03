@@ -52,8 +52,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.signin -> {
-                // TODO: just hardcode it, implementation must be in homework
-                NMediaApplication.appAuth.setAuth(5, "x-token")
+                findNavController(R.id.nav_host_fragment_container)
+                    .navigate(R.id.action_feedFragment_to_signInFragment)
                 true
             }
             R.id.signup -> {
