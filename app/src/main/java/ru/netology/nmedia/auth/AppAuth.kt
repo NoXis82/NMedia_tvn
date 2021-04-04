@@ -67,3 +67,4 @@ class AppAuth private constructor(context: Context) {
 }
 
 data class AuthState(val id: Long = 0, val token: String? = null)
+

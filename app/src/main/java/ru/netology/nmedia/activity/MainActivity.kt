@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 true
             }
             R.id.signout -> {
-                // TODO: just hardcode it, implementation must be in homework
                 NMediaApplication.appAuth.removeAuth()
                 true
             }

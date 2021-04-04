@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.PostsApi
+import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.enumeration.AttachmentType
@@ -80,6 +81,10 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
             upload.file.asRequestBody()
         )
         return PostsApi.retrofitService.upload(media)
+    }
+
+    override suspend fun updateUser(login: String, pass: String): AuthState {
+        return PostsApi.retrofitService.updateUser(login, pass)
     }
 
     override suspend fun savePost(post: PostEntity) = dao.insert(post)
