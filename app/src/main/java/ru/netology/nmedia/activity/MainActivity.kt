@@ -1,5 +1,6 @@
 package ru.netology.nmedia.activity
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -58,11 +59,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
             R.id.signup -> {
                 // TODO: just hardcode it, implementation must be in homework
+                //Здесь будет переход на регистрацию
                 NMediaApplication.appAuth.setAuth(5, "x-token")
                 true
             }
             R.id.signout -> {
-                NMediaApplication.appAuth.removeAuth()
+                AlertDialog.Builder(this)
+                    .setTitle(R.string.sign_out)
+                    .setMessage(R.string.message_sign_out_dialog)
+                    .setPositiveButton(R.string.dialog_btn_yes) { _, _ ->
+                        NMediaApplication.appAuth.removeAuth()
+                        findNavController(R.id.nav_host_fragment_container).navigateUp()
+                    }
+                    .setNegativeButton(R.string.dialog_btn_no) { _, _ ->
+                        return@setNegativeButton
+                    }
+                    .show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

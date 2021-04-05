@@ -1,5 +1,6 @@
 package ru.netology.nmedia.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.fragments.ImageViewFragment.Companion.urlImage
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.PostReview.Companion.author
@@ -30,6 +32,7 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
+    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,8 +44,12 @@ class FeedFragment : Fragment() {
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
             override fun onLike(post: Post) {
-                checkPost = post
-                viewModel.like(post)
+                if (viewModel.checkSignIn()) {
+                    checkPost = post
+                    viewModel.like(post)
+                } else {
+                    dialogSign()
+                }
             }
 
             override fun onShare(post: Post) {
@@ -133,7 +140,11 @@ class FeedFragment : Fragment() {
         }
 
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
+            if (viewModel.checkSignIn()) {
+                findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
+            } else {
+                dialogSign()
+            }
         }
         binding.rvPostList.adapter = adapter
         viewModel.state.observe(viewLifecycleOwner) { model ->
@@ -149,5 +160,18 @@ class FeedFragment : Fragment() {
             viewModel.loadPosts()
         }
         return binding.root
+    }
+
+    private fun dialogSign() {
+        AlertDialog.Builder(view?.context)
+            .setTitle(R.string.sign_in)
+            .setMessage(R.string.message_add_dialog)
+            .setPositiveButton(R.string.dialog_btn_yes) { _, _ ->
+                findNavController().navigate(R.id.action_feedFragment_to_signInFragment)
+            }
+            .setNegativeButton(R.string.dialog_btn_no) { _, _ ->
+                return@setNegativeButton
+            }
+            .show()
     }
 }

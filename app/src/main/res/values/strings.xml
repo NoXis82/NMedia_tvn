@@ -39,5 +39,8 @@
     <string name="btn_sign_in">Sign in</string>
     <string name="error_login">Login can\'t be empty</string>
     <string name="error_pass">Pass can\'t be empty</string>
-
+    <string name="message_add_dialog">You need to log in</string>
+    <string name="dialog_btn_yes">Yes</string>
+    <string name="dialog_btn_no">No</string>
+    <string name="message_sign_out_dialog">Are you sure?</string>
 </resources>

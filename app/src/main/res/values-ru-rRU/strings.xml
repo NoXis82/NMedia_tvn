@@ -39,6 +39,8 @@
     <string name="btn_sign_in">Sign in</string>
     <string name="error_login">Login не может быть пустым</string>
     <string name="error_pass">Pass не может быть пустым</string>
-
-
+    <string name="message_add_dialog">Необходимо авторизоваться</string>
+    <string name="dialog_btn_yes">Да</string>
+    <string name="dialog_btn_no">Нет</string>
+    <string name="message_sign_out_dialog">Вы уверены?</string>
 </resources>

@@ -7,17 +7,15 @@ import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
 import ru.netology.nmedia.application.NMediaApplication
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.application.NMediaApplication.Companion.repository
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.utils.SingleLiveEvent
 import java.io.File
 import java.io.IOException
@@ -33,7 +31,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     )
     private val noPhoto = PhotoModel()
     private var localId = 0L
-    private val repository = NMediaApplication.repository
     private val _state = MutableLiveData(FeedModel())
     val state: LiveData<FeedModel>
         get() = _state
@@ -78,6 +75,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
+    }
+
+    fun checkSignIn(): Boolean {
+        return NMediaApplication.appAuth.authStateFlow.value.id != 0L
     }
 
     fun changePhoto(uri: Uri?, file: File?) {
