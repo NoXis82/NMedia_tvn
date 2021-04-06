@@ -14,6 +14,7 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.application.NMediaApplication.Companion.repository
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.utils.SingleLiveEvent
@@ -167,22 +168,22 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun savePost() {
         viewModelScope.launch {
-            edited.value?.let {
+            edited.value?.let { post ->
                 _postCreated.value = Unit
                 try {
                     when (_photo.value) {
                         noPhoto -> {
-                            val localPost = PostEntity.fromDto(it)
+                            val localPost = PostEntity.fromDto(post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id))
                                 .copy(state = PostState.Progress)
-                            if (it.id == 0L) {
+                            if (post.id == 0L) {
                                 localPost.let { entity ->
                                     localId = repository.savePost(entity)
                                     entity.copy(localId = localId, id = localId)
                                 }
                             } else {
-                                localId = it.id
+                                localId = post.id
                             }
-                            val networkPost = repository.sendPost(it)
+                            val networkPost = repository.sendPost(post)
                             repository.savePost(
                                 localPost.copy(
                                     state = PostState.Success,
@@ -192,14 +193,41 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                             )
                         }
                         else -> {
-                            _photo.value?.file?.let { file ->
-                                repository.saveWithAttachment(it, MediaUpload(file))
+                            val media = _photo.value?.file?.let { file ->
+                                repository.upload(MediaUpload(file))
                             }
+                            val localPost = PostEntity.fromDto(
+                                post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id,
+                                    attachment = media?.let {
+                                    Attachment(it.id, AttachmentType.IMAGE)
+                                }
+                                )
+                            )
+                                .copy(state = PostState.Progress)
+                            if (post.id == 0L) {
+                                localPost.let { entity ->
+                                    localId = repository.savePost(entity)
+                                    entity.copy(localId = localId, id = localId)
+                                }
+                            } else {
+                                localId = post.id
+                            }
+                            val networkPost = repository.sendPost(post)
+                            repository.savePost(
+                                localPost.copy(
+                                    state = PostState.Success,
+                                    id = networkPost.id,
+                                    localId = localId
+                                )
+                            )
+
                         }
+
                     }
+
                 } catch (e: IOException) {
                     repository.savePost(
-                        PostEntity.fromDto(it)
+                        PostEntity.fromDto(post)
                             .copy(
                                 state = PostState.Error,
                                 localId = localId,

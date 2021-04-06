@@ -8,7 +8,6 @@ import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.enumeration.AttachmentType
 
 class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
     override val posts: Flow<List<Post>>
@@ -65,14 +64,6 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
 
     override suspend fun sendNewer(posts: List<Post>) =
         dao.insertOrUpdate(posts.map(PostEntity.Companion::fromDto))
-
-    override suspend fun saveWithAttachment(post: Post, upload: MediaUpload) {
-            val media = upload(upload)
-            val postWithAttachment =
-                post.copy(attachment = Attachment(media.id, AttachmentType.IMAGE))
-            savePost(PostEntity.fromDto(postWithAttachment))
-            sendPost(postWithAttachment)
-    }
 
     override suspend fun upload(upload: MediaUpload): Media {
         val media = MultipartBody.Part.createFormData(

@@ -89,7 +89,6 @@ class FeedFragment : Fragment() {
             }
 
             override fun onEdit(post: Post) {
-
                 viewModel.editContent(post)
                 findNavController().navigate(R.id.action_feedFragment_to_editPost,
                     Bundle().apply {

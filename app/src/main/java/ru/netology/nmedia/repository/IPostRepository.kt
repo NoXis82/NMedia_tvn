@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dto.*
 
+
 interface IPostRepository {
     val posts: Flow<List<Post>>
     fun getNewerCount(id: Long): Flow<Int>
@@ -15,9 +16,7 @@ interface IPostRepository {
     suspend fun savePost(post: PostEntity): Long
     suspend fun sendPost(post: Post): Post
     suspend fun sendNewer(posts: List<Post>)
-    suspend fun saveWithAttachment(post: Post, upload: MediaUpload)
-    suspend fun upload(upload: MediaUpload): Media
+    suspend fun upload(upload:MediaUpload): Media
     suspend fun updateUser(login: String, pass: String): AuthState
     suspend fun regUser(login: String, pass: String, name: String): AuthState
-
 }
