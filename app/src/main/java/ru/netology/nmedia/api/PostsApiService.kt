@@ -68,7 +68,19 @@ interface PostApiService {
 
     @FormUrlEncoded
     @POST("users/authentication")
-    suspend fun updateUser(@Field("login") login: String, @Field("pass") pass: String): AuthState
+    suspend fun updateUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String
+    ): AuthState
+
+    @FormUrlEncoded
+    @POST("users/registration")
+    suspend fun regUser(
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+        @Field("name") name: String
+    ): AuthState
+
 
 }
 

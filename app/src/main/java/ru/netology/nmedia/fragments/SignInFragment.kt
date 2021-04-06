@@ -11,10 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSignInBinding
-import ru.netology.nmedia.viewmodel.SingInViewModel
+import ru.netology.nmedia.viewmodel.SignInViewModel
 
 class SignInFragment : Fragment() {
-    private val viewModel: SingInViewModel by viewModels()
+    private val viewModel: SignInViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

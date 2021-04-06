@@ -58,9 +58,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 true
             }
             R.id.signup -> {
-                // TODO: just hardcode it, implementation must be in homework
-                //Здесь будет переход на регистрацию
-                NMediaApplication.appAuth.setAuth(5, "x-token")
+               findNavController(R.id.nav_host_fragment_container)
+                   .navigate(R.id.action_feedFragment_to_signUpFragment)
                 true
             }
             R.id.signout -> {

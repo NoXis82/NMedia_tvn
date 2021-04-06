@@ -87,6 +87,10 @@ class PostRepositoryImpl(private val dao: PostDao) : IPostRepository {
         return PostsApi.retrofitService.updateUser(login, pass)
     }
 
+    override suspend fun regUser(login: String, pass: String, name: String): AuthState {
+     return PostsApi.retrofitService.regUser(login, pass, name)
+    }
+
     override suspend fun savePost(post: PostEntity) = dao.insert(post)
 
     override suspend fun sendPost(post: Post): Post = PostsApi.retrofitService.savePost(post)

@@ -43,4 +43,11 @@
     <string name="dialog_btn_yes">Yes</string>
     <string name="dialog_btn_no">No</string>
     <string name="message_sign_out_dialog">Are you sure?</string>
+    <string name="title_name">Имя</string>
+    <string name="title_login_reg">Login</string>
+    <string name="title_password_reg">Пароль</string>
+    <string name="title_pass_retry">Пароль повторить</string>
+    <string name="title_btn_reg">Регистрация</string>
+    <string name="error_validate_value">Заполните все поля</string>
+    <string name="error_validate_pass">Неверно указан пароль</string>
 </resources>
