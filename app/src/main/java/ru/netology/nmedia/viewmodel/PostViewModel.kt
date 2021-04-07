@@ -3,17 +3,20 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.nmedia.R
-import ru.netology.nmedia.db.AppDb
+import ru.netology.nmedia.application.NMediaApplication
+import ru.netology.nmedia.application.NMediaApplication.Companion.repository
 import ru.netology.nmedia.dto.*
+import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.*
 import ru.netology.nmedia.utils.SingleLiveEvent
 import java.io.File
 import java.io.IOException
@@ -29,9 +32,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     )
     private val noPhoto = PhotoModel()
     private var localId = 0L
-    private val repository: IPostRepository = PostRepositoryImpl(
-        AppDb.getInstance(application).postDao()
-    )
     private val _state = MutableLiveData(FeedModel())
     val state: LiveData<FeedModel>
         get() = _state
@@ -41,8 +41,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
+    @ExperimentalCoroutinesApi
     val posts: LiveData<List<Post>>
-        get() = repository.posts.asLiveData(Dispatchers.Default)
+        get() = NMediaApplication.appAuth
+            .authStateFlow
+            .flatMapLatest { (myId, _) ->
+                repository.posts
+                    .map { posts ->
+                        posts.map { it.copy(ownedByMe = it.authorId == myId) }
+                    }
+            }.asLiveData(Dispatchers.Default)
 
     private val _postsRefreshError = SingleLiveEvent<Unit>()
     val postsRefreshError: LiveData<Unit>
@@ -56,6 +64,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postLikeError: LiveData<Unit>
         get() = _postLikeError
 
+    @ExperimentalCoroutinesApi
     val newPosts = posts.switchMap {
         repository.getNewerCount(it.firstOrNull()?.id ?: 0L)
             .asLiveData()
@@ -67,6 +76,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         loadPosts()
+    }
+
+    fun checkSignIn(): Boolean {
+        return NMediaApplication.appAuth.authStateFlow.value.id != 0L
     }
 
     fun changePhoto(uri: Uri?, file: File?) {
@@ -155,22 +168,22 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun savePost() {
         viewModelScope.launch {
-            edited.value?.let {
+            edited.value?.let { post ->
                 _postCreated.value = Unit
                 try {
                     when (_photo.value) {
                         noPhoto -> {
-                            val localPost = PostEntity.fromDto(it)
+                            val localPost = PostEntity.fromDto(post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id))
                                 .copy(state = PostState.Progress)
-                            if (it.id == 0L) {
+                            if (post.id == 0L) {
                                 localPost.let { entity ->
                                     localId = repository.savePost(entity)
                                     entity.copy(localId = localId, id = localId)
                                 }
                             } else {
-                                localId = it.id
+                                localId = post.id
                             }
-                            val networkPost = repository.sendPost(it)
+                            val networkPost = repository.sendPost(post)
                             repository.savePost(
                                 localPost.copy(
                                     state = PostState.Success,
@@ -180,14 +193,41 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                             )
                         }
                         else -> {
-                            _photo.value?.file?.let { file ->
-                                repository.saveWithAttachment(it, MediaUpload(file))
+                            val media = _photo.value?.file?.let { file ->
+                                repository.upload(MediaUpload(file))
                             }
+                            val localPost = PostEntity.fromDto(
+                                post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id,
+                                    attachment = media?.let {
+                                    Attachment(it.id, AttachmentType.IMAGE)
+                                }
+                                )
+                            )
+                                .copy(state = PostState.Progress)
+                            if (post.id == 0L) {
+                                localPost.let { entity ->
+                                    localId = repository.savePost(entity)
+                                    entity.copy(localId = localId, id = localId)
+                                }
+                            } else {
+                                localId = post.id
+                            }
+                            val networkPost = repository.sendPost(post)
+                            repository.savePost(
+                                localPost.copy(
+                                    state = PostState.Success,
+                                    id = networkPost.id,
+                                    localId = localId
+                                )
+                            )
+
                         }
+
                     }
+
                 } catch (e: IOException) {
                     repository.savePost(
-                        PostEntity.fromDto(it)
+                        PostEntity.fromDto(post)
                             .copy(
                                 state = PostState.Error,
                                 localId = localId,

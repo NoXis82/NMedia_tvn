@@ -49,7 +49,7 @@ class PostViewHolder(
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
             Glide.with(avatar)
-                .load("http://172.20.10.7:9999/avatars/${post.authorAvatar}")
+                .load("http://192.168.0.103:9999/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_account_circle_48)
                 .timeout(10_000)
                 .circleCrop()
@@ -57,11 +57,10 @@ class PostViewHolder(
             btnErrorApiLoad.isVisible = post.state == PostState.Error
             pbProgress.isVisible = post.state == PostState.Progress
             ivStatus.isVisible = post.state == PostState.Success
-
             if (post.attachment != null && post.attachment.type == AttachmentType.IMAGE) {
                 frameAttachView.visibility = View.VISIBLE
                 Glide.with(ivImageAttachPost)
-                    .load("http://172.20.10.7:9999/media/${post.attachment.url}")
+                    .load("http://192.168.0.103:9999/media/${post.attachment.url}")
                     .placeholder(R.drawable.ic_attach_error_48)
                     .timeout(10_000)
                     .into(ivImageAttachPost)
@@ -81,9 +80,12 @@ class PostViewHolder(
                 onInteractionListener.onRetrySendPost(post)
             }
 
+            menuPost.visibility = if (post.ownedByMe) View.VISIBLE else View.GONE
+
             menuPost.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.option_menu_post)
+                    menu.setGroupVisible(R.id.owned, post.ownedByMe)
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.postRemove -> {

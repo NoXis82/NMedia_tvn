@@ -31,4 +31,23 @@
     <string name="description_select_photo">Select photo</string>
     <string name="description_take_photo">Take photo</string>
     <string name="menu_save">Save</string>
+    <string name="sign_in">Вход</string>
+    <string name="sign_up">Регистрация</string>
+    <string name="sign_out">Выход</string>
+    <string name="title_login">Login:</string>
+    <string name="title_password">Password</string>
+    <string name="btn_sign_in">Sign in</string>
+    <string name="error_login">Login не может быть пустым</string>
+    <string name="error_pass">Pass не может быть пустым</string>
+    <string name="message_add_dialog">Необходимо авторизоваться</string>
+    <string name="dialog_btn_yes">Да</string>
+    <string name="dialog_btn_no">Нет</string>
+    <string name="message_sign_out_dialog">Вы уверены?</string>
+    <string name="title_name">Имя</string>
+    <string name="title_login_reg">Login</string>
+    <string name="title_password_reg">Пароль</string>
+    <string name="title_pass_retry">Пароль повторить</string>
+    <string name="title_btn_reg">Регистрация</string>
+    <string name="error_validate_value">Заполните все поля</string>
+    <string name="error_validate_pass">Неверно указан пароль</string>
 </resources>
