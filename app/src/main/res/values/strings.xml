@@ -53,5 +53,5 @@
     <string name="channel_remote_name">Server notifications</string>
     <string name="channel_remote_description">Notifications from remote server</string>
     <string name="notification_error">Notification %1$s does not match any value Action</string>
-
+    <string name="google_play_unavailable">Google Api Unavailable</string>
 </resources>

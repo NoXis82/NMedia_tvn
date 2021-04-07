@@ -53,4 +53,5 @@
     <string name="channel_remote_name">Уведомления с сервера</string>
     <string name="channel_remote_description">Уведомления с удалённого сервера</string>
     <string name="notification_error">Notification %1$s не соответствует ни одному значению Action</string>
+    <string name="google_play_unavailable">Google Api Недоступно</string>
 </resources>

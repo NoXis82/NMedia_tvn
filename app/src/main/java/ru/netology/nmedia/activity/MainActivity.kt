@@ -5,10 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
 import androidx.navigation.findNavController
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.firebase.installations.FirebaseInstallations
+import com.google.firebase.messaging.FirebaseMessaging
 import ru.netology.nmedia.R
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.fragments.AddNewPost.Companion.textArg
@@ -39,6 +44,30 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         viewModel.data.observe(this) {
             invalidateOptionsMenu()
         }
+
+        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                println("some stuff happened: ${task.exception}")
+                return@addOnCompleteListener
+            }
+
+            val token = task.result
+            println(token)
+        }
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                println("some stuff happened: ${task.exception}")
+                return@addOnCompleteListener
+            }
+
+            val token = task.result
+            println(token)
+        }
+
+        checkGoogleApiAvailability()
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -58,8 +87,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 true
             }
             R.id.signup -> {
-               findNavController(R.id.nav_host_fragment_container)
-                   .navigate(R.id.action_feedFragment_to_signUpFragment)
+                findNavController(R.id.nav_host_fragment_container)
+                    .navigate(R.id.action_feedFragment_to_signUpFragment)
                 true
             }
             R.id.signout -> {
@@ -77,6 +106,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun checkGoogleApiAvailability() {
+        with(GoogleApiAvailability.getInstance()) {
+            val code = isGooglePlayServicesAvailable(this@MainActivity)
+            if (code == ConnectionResult.SUCCESS) {
+                return@with
+            }
+            if (isUserResolvableError(code)) {
+                getErrorDialog(this@MainActivity, code, 9000).show()
+                return
+            }
+            Toast.makeText(this@MainActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
+                .show()
         }
     }
 }

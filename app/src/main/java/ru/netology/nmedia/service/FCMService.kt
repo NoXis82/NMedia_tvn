@@ -9,6 +9,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import ru.netology.nmedia.R
+import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.auth.AppAuth
 
 const val TAG_APP = "FCMService"
@@ -35,8 +36,8 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         try {
-
-
+            //NMediaApplication.appAuth.authStateFlow.value.id
+          println(message.data[content])
 
         } catch (e: Exception) {
             Log.e(
