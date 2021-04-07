@@ -12,6 +12,7 @@ import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.dto.PushToken
 import java.util.concurrent.TimeUnit
 
 private val logging = HttpLoggingInterceptor()
@@ -81,7 +82,8 @@ interface PostApiService {
         @Field("name") name: String
     ): AuthState
 
-
+    @POST("users/push-tokens")
+    suspend fun push(@Body pushToken: PushToken): Unit
 }
 
 object PostsApi {

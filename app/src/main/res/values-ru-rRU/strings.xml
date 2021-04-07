@@ -50,4 +50,7 @@
     <string name="title_btn_reg">Регистрация</string>
     <string name="error_validate_value">Заполните все поля</string>
     <string name="error_validate_pass">Неверно указан пароль</string>
+    <string name="channel_remote_name">Уведомления с сервера</string>
+    <string name="channel_remote_description">Уведомления с удалённого сервера</string>
+    <string name="notification_error">Notification %1$s не соответствует ни одному значению Action</string>
 </resources>
