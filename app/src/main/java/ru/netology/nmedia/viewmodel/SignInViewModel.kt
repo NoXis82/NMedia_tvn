@@ -1,5 +1,7 @@
 package ru.netology.nmedia.viewmodel
 
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -14,6 +16,7 @@ class SignInViewModel : ViewModel() {
         CoroutineScope(EmptyCoroutineContext).launch {
             try {
                 val authState = repository.updateUser(login, pass)
+                Log.e("MY", authState.id.toString())
                 NMediaApplication.appAuth.setAuth(authState.id, authState.token ?: "x-token")
             } catch (e: IOException) {
                 e.printStackTrace()
