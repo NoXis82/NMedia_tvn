@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -88,6 +89,7 @@ dependencies {
 
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
+    //room
     def room_version = "2.2.5"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-runtime:$room_version"
@@ -101,7 +103,14 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttploggin_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
 
-    def coroutines_version = "1.4.2"
+    //coroutines
+    def coroutines_version = "1.4.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
 
+    //firebase
+    def firebase_version = "26.8.0"
+    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
+    implementation "com.google.firebase:firebase-messaging-ktx"
 }
