@@ -16,7 +16,6 @@ class AppAuth private constructor(context: Context) {
     private val idKey = "id"
     private val tokenKey = "token"
     private val _authStateFlow: MutableStateFlow<AuthState>
-    var tokenSave: String = ""
 
     init {
         val id = prefs.getLong(idKey, 0)
@@ -38,7 +37,6 @@ class AppAuth private constructor(context: Context) {
         CoroutineScope(Dispatchers.Default).launch {
             try {
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
-                tokenSave = pushToken.token
                 PostsApi.retrofitService.push(pushToken)
             } catch (e: Exception) {
                 e.printStackTrace()

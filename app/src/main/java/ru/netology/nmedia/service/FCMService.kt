@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -14,7 +13,7 @@ import com.google.gson.Gson
 import ru.netology.nmedia.R
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.auth.AppAuth
-import ru.netology.nmedia.dto.PushToken
+import ru.netology.nmedia.dto.ContentPush
 import kotlin.random.Random
 
 const val TAG_APP = "FCMService"
@@ -41,17 +40,11 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         try {
-            val recipientId = gson.fromJson(message.data[content], Content::class.java).recipientId
-            val content = gson.fromJson(message.data[content], Content::class.java).content
+            val content = gson.fromJson(message.data[content], ContentPush::class.java)
             val authStateId = NMediaApplication.appAuth.authStateFlow.value.id
-            if (recipientId == authStateId) {
-                notification(content)
-            }
-            if (recipientId == 0L || recipientId != 0L && recipientId != authStateId) {
-                AppAuth.getInstance().sendPushToken(token = AppAuth.getInstance().tokenSave)
-            }
-            if (recipientId == null) {
-                notification(content)
+            when (content.recipientId) {
+                authStateId, null -> handlerForAll(content.content)
+                else -> AppAuth.getInstance().sendPushToken()
             }
         } catch (e: Exception) {
             Log.e(
@@ -68,7 +61,7 @@ class FCMService : FirebaseMessagingService() {
         AppAuth.getInstance().sendPushToken(token)
     }
 
-    private fun notification(content: String) {
+    private fun handlerForAll(content: String) {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.posts_avatars_drawable)
             .setContentTitle(content)
@@ -79,8 +72,3 @@ class FCMService : FirebaseMessagingService() {
     }
 
 }
-
-data class Content(
-    val recipientId: Long? = null,
-    val content: String
-)
