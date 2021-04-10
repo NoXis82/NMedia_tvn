@@ -1,7 +1,6 @@
 package ru.netology.nmedia.repository
 
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -10,14 +9,10 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import ru.netology.nmedia.api.PostsApi
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.auth.AuthState
-import ru.netology.nmedia.dao.PostDao
-import ru.netology.nmedia.dao.PostWorkDao
+import ru.netology.nmedia.dao.*
 import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.entity.AttachmentEmbeddable
-import ru.netology.nmedia.entity.PostEntity
-import ru.netology.nmedia.entity.PostWorkEntity
-import ru.netology.nmedia.enumeration.AttachmentType
-import ru.netology.nmedia.enumeration.PostState
+import ru.netology.nmedia.entity.*
+import ru.netology.nmedia.enumeration.*
 import java.lang.Exception
 
 class PostRepositoryImpl(
