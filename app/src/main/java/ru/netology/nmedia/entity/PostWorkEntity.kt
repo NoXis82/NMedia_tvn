@@ -1,11 +1,13 @@
-package ru.netology.nmedia.dto
+package ru.netology.nmedia.entity
 
-import androidx.room.*
-import ru.netology.nmedia.enumeration.AttachmentType
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.PostState
 
 @Entity
-data class PostEntity(
+data class PostWorkEntity(
     @PrimaryKey(autoGenerate = true)
     val localId: Long,
     val id: Long,
@@ -21,9 +23,9 @@ data class PostEntity(
     val likedByMe: Boolean = false,
     val state: PostState = PostState.Success,
     @Embedded
-    var attachment: AttachmentEmbeddable?
+    var attachment: AttachmentEmbeddable?,
+    var uri: String? = null
 ) {
-
     fun toDto() =
         Post(
             id,
@@ -41,9 +43,8 @@ data class PostEntity(
             attachment?.toDto()
         )
 
-
     companion object {
-        fun fromDto(dto: Post) = PostEntity(
+        fun fromDto(dto: Post) = PostWorkEntity(
             0,
             dto.id,
             dto.authorId,
@@ -59,37 +60,5 @@ data class PostEntity(
             dto.state,
             AttachmentEmbeddable.fromDto(dto.attachment))
     }
+
 }
-
-class PostStateConverter {
-    @TypeConverter
-    fun toPostState(raw: String): PostState = PostState.values()
-        .find { it.name == raw } ?: PostState.Success
-
-    @TypeConverter
-    fun fromPostState(postState: PostState): String = postState.name
-}
-
-
-data class AttachmentEmbeddable(
-    var url: String,
-    var type: AttachmentType
-) {
-    fun toDto() = Attachment(url, type)
-
-    companion object {
-        fun fromDto(dto: Attachment?) = dto?.let {
-            AttachmentEmbeddable(it.url, it.type)
-        }
-    }
-}
-
-class Converters {
-    @TypeConverter
-    fun toAttachmentType(value: String) = enumValueOf<AttachmentType>(value)
-    @TypeConverter
-    fun fromAttachmentType(value: AttachmentType) = value.name
-}
-
-fun List<Post>.toEntity(): List<PostEntity> = map(PostEntity.Companion::fromDto)
-fun List<PostEntity>.toDto(): List<Post> = map(PostEntity::toDto)

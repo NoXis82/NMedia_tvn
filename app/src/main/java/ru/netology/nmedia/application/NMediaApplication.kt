@@ -23,7 +23,8 @@ class NMediaApplication : Application() {
         super.onCreate()
         setupAuth()
         setupWork()
-        repository = PostRepositoryImpl(AppDb.getInstance(applicationContext).postDao())
+        repository = PostRepositoryImpl(AppDb.getInstance(applicationContext).postDao(),
+            AppDb.getInstance(applicationContext).postWorkDao())
         appAuth = AppAuth.getInstance()
     }
 
