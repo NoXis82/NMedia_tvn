@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 29
@@ -102,10 +103,21 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttploggin_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
 
+    //hilt
+    def hilt_viewmodel_version = "1.0.0-alpha03"
+    def hilt_compiler_version = "1.0.0-beta01"
+    def hilt_work_version = "1.0.0-beta01"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_viewmodel_version"
+    implementation "androidx.hilt:hilt-work:$hilt_work_version"
+    kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+
     //workmanager
     def workmanager_version = "2.5.0"
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
+    //coroutines
     def coroutines_version = "1.4.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
