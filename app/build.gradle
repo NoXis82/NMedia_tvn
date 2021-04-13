@@ -101,6 +101,10 @@ dependencies {
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttploggin_version"
     implementation "com.github.bumptech.glide:glide:$glide_version"
 
+    //workmanager
+    def workmanager_version = "2.5.0"
+    implementation "androidx.work:work-runtime-ktx:$workmanager_version"
+
     def coroutines_version = "1.4.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
 

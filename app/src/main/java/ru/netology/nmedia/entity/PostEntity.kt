@@ -1,6 +1,7 @@
-package ru.netology.nmedia.dto
+package ru.netology.nmedia.entity
 
 import androidx.room.*
+import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.enumeration.AttachmentType
 import ru.netology.nmedia.enumeration.PostState
 
@@ -58,6 +59,25 @@ data class PostEntity(
             dto.likedByMe,
             dto.state,
             AttachmentEmbeddable.fromDto(dto.attachment))
+
+        fun fromWorkDto(dto: PostWorkEntity) = PostEntity(
+            0,
+            dto.id,
+            dto.authorId,
+            dto.author,
+            dto.authorAvatar,
+            dto.content,
+            dto.published,
+            dto.likes,
+            dto.share,
+            dto.chat,
+            dto.views,
+            dto.likedByMe,
+            dto.state,
+            dto.attachment
+        )
+
+
     }
 }
 
@@ -68,20 +88,6 @@ class PostStateConverter {
 
     @TypeConverter
     fun fromPostState(postState: PostState): String = postState.name
-}
-
-
-data class AttachmentEmbeddable(
-    var url: String,
-    var type: AttachmentType
-) {
-    fun toDto() = Attachment(url, type)
-
-    companion object {
-        fun fromDto(dto: Attachment?) = dto?.let {
-            AttachmentEmbeddable(it.url, it.type)
-        }
-    }
 }
 
 class Converters {

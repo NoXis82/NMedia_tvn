@@ -3,7 +3,9 @@ package ru.netology.nmedia.viewmodel
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.*
+import androidx.work.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -14,20 +16,23 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.application.NMediaApplication.Companion.repository
 import ru.netology.nmedia.dto.*
-import ru.netology.nmedia.enumeration.AttachmentType
+import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.utils.SingleLiveEvent
-import java.io.File
+import ru.netology.nmedia.work.*
 import java.io.IOException
 
+@ExperimentalCoroutinesApi
 class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     var isHandledBackPressed: String = ""
     private val empty = Post(
+        id = 0,
         content = "",
-        author = "Student",
-        authorAvatar = "nelotogy.jpg",
+        authorId = 0,
+        author = "",
+        authorAvatar = "",
         published = ""
     )
     private val noPhoto = PhotoModel()
@@ -41,7 +46,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-    @ExperimentalCoroutinesApi
+    private val workManager: WorkManager =
+        WorkManager.getInstance(application)
+
     val posts: LiveData<List<Post>>
         get() = NMediaApplication.appAuth
             .authStateFlow
@@ -64,7 +71,6 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     val postLikeError: LiveData<Unit>
         get() = _postLikeError
 
-    @ExperimentalCoroutinesApi
     val newPosts = posts.switchMap {
         repository.getNewerCount(it.firstOrNull()?.id ?: 0L)
             .asLiveData()
@@ -82,8 +88,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         return NMediaApplication.appAuth.authStateFlow.value.id != 0L
     }
 
-    fun changePhoto(uri: Uri?, file: File?) {
-        _photo.value = PhotoModel(uri, file)
+    fun changePhoto(uri: Uri?) {
+        _photo.value = PhotoModel(uri)
     }
 
     fun checkNewPost(count: Int) {
@@ -129,7 +135,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removePost(id: Long) {
         viewModelScope.launch {
             try {
-                repository.removePost(id)
+                val data = workDataOf(RemovePostWorker.postKey to id)
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+                val request = OneTimeWorkRequestBuilder<RemovePostWorker>()
+                    .setInputData(data)
+                    .setConstraints(constraints)
+                    .build()
+                workManager.enqueue(request)
             } catch (e: IOException) {
                 _postRemoveError.value = Unit
             }
@@ -171,60 +185,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             edited.value?.let { post ->
                 _postCreated.value = Unit
                 try {
-                    when (_photo.value) {
-                        noPhoto -> {
-                            val localPost = PostEntity.fromDto(post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id))
-                                .copy(state = PostState.Progress)
-                            if (post.id == 0L) {
-                                localPost.let { entity ->
-                                    localId = repository.savePost(entity)
-                                    entity.copy(localId = localId, id = localId)
-                                }
-                            } else {
-                                localId = post.id
-                            }
-                            val networkPost = repository.sendPost(post)
-                            repository.savePost(
-                                localPost.copy(
-                                    state = PostState.Success,
-                                    id = networkPost.id,
-                                    localId = localId
-                                )
-                            )
+                    val id = when (_photo.value) {
+                        noPhoto -> repository.prepareWork(post)
+                        else -> _photo.value?.uri?.let {
+                            repository.saveWork(post, MediaUpload(it.toFile()))
                         }
-                        else -> {
-                            val media = _photo.value?.file?.let { file ->
-                                repository.upload(MediaUpload(file))
-                            }
-                            val localPost = PostEntity.fromDto(
-                                post.copy(authorId = NMediaApplication.appAuth.authStateFlow.value.id,
-                                    attachment = media?.let {
-                                    Attachment(it.id, AttachmentType.IMAGE)
-                                }
-                                )
-                            )
-                                .copy(state = PostState.Progress)
-                            if (post.id == 0L) {
-                                localPost.let { entity ->
-                                    localId = repository.savePost(entity)
-                                    entity.copy(localId = localId, id = localId)
-                                }
-                            } else {
-                                localId = post.id
-                            }
-                            val networkPost = repository.sendPost(post)
-                            repository.savePost(
-                                localPost.copy(
-                                    state = PostState.Success,
-                                    id = networkPost.id,
-                                    localId = localId
-                                )
-                            )
-
-                        }
-
                     }
-
+                    val data = workDataOf(SavePostWorker.postKey to id)
+                    val constraints = Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                    val request = OneTimeWorkRequestBuilder<SavePostWorker>()
+                        .setInputData(data)
+                        .setConstraints(constraints)
+                        .build()
+                    workManager.enqueue(request)
                 } catch (e: IOException) {
                     repository.savePost(
                         PostEntity.fromDto(post)
