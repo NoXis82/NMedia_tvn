@@ -119,6 +119,8 @@ dependencies {
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    annotationProcessor "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+
 
     //workmanager
     def workmanager_version = "2.5.0"

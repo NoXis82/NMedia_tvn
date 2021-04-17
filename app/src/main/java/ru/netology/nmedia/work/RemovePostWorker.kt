@@ -1,14 +1,18 @@
 package ru.netology.nmedia.work
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.repository.IPostRepository
 
-class RemovePostWorker(
-    applicationContext: Context,
-    params: WorkerParameters,
+@HiltWorker
+class RemovePostWorker @AssistedInject constructor(
+    @Assisted applicationContext: Context,
+    @Assisted params: WorkerParameters,
     private val repository: IPostRepository
 ) : CoroutineWorker(applicationContext, params) {
 

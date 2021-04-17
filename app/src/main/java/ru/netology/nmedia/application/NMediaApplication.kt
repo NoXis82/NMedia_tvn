@@ -1,6 +1,7 @@
 package ru.netology.nmedia.application
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.*
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -15,8 +16,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidApp
-class NMediaApplication : Application() {
+class NMediaApplication : Application(), Configuration.Provider {
     private val appScope = CoroutineScope(Dispatchers.Default)
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
 
     @Inject
     lateinit var appAuth: AppAuth
@@ -29,6 +33,7 @@ class NMediaApplication : Application() {
         setupAuth()
         setupWork()
     }
+
     private fun setupAuth() {
         appScope.launch {
             appAuth.sendPushToken()
@@ -51,5 +56,9 @@ class NMediaApplication : Application() {
         }
     }
 
+    override fun getWorkManagerConfiguration() =
+        Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
 
 }

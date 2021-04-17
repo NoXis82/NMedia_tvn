@@ -2,14 +2,18 @@ package ru.netology.nmedia.work
 
 import android.content.Context
 import android.util.Log
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.repository.IPostRepository
 
-class SavePostWorker(
-    applicationContext: Context,
-    params: WorkerParameters,
+@HiltWorker
+class SavePostWorker @AssistedInject constructor(
+    @Assisted applicationContext: Context,
+    @Assisted params: WorkerParameters,
     private val repository: IPostRepository
 ) : CoroutineWorker(applicationContext, params) {
 
