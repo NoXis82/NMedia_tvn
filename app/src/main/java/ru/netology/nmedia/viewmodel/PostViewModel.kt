@@ -1,6 +1,6 @@
 package ru.netology.nmedia.viewmodel
 
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import androidx.core.net.toFile
@@ -28,8 +28,7 @@ import javax.inject.Inject
 class PostViewModel @Inject constructor(
     private val repository: IPostRepository,
     private val workManager: WorkManager,
-    private val auth: AppAuth,
-    @ApplicationContext  private val context: Context
+    private val auth: AppAuth
 ) : ViewModel() {
 
     var isHandledBackPressed: String = ""
@@ -51,7 +50,6 @@ class PostViewModel @Inject constructor(
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
-
     val posts: LiveData<List<Post>>
         get() = auth
             .authStateFlow
@@ -229,20 +227,5 @@ class PostViewModel @Inject constructor(
 
     fun editContent(post: Post) {
         edited.value = post
-    }
-
-    fun sharePost(post: Post) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, post.content)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(
-            intent,
-            R.string.chooser_share_post.toString()
-        ).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-       context.startActivity(shareIntent)
     }
 }
