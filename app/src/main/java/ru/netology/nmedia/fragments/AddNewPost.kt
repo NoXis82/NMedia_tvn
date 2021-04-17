@@ -8,16 +8,19 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentAddNewPostBinding
 import ru.netology.nmedia.utils.AndroidUtils
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class AddNewPost : Fragment() {
     private val photoRequestCode = 1
     private val cameraRequestCode = 2
@@ -108,6 +111,8 @@ class AddNewPost : Fragment() {
         return binding.root
     }
 
+
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == ImagePicker.RESULT_ERROR) {
@@ -121,7 +126,6 @@ class AddNewPost : Fragment() {
             requestCode == cameraRequestCode
         ) {
             val url = data?.data
-            val file = ImagePicker.getFile(data)
             viewModel.changePhoto(url)
         }
 

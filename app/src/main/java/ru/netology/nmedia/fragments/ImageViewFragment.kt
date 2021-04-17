@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentImageViewBinding
 import ru.netology.nmedia.utils.StringArg
 
+@AndroidEntryPoint
 class ImageViewFragment : Fragment() {
     companion object {
         var Bundle.urlImage: String? by StringArg

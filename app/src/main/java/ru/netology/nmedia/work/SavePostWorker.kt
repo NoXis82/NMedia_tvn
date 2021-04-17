@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ru.netology.nmedia.application.NMediaApplication
+import ru.netology.nmedia.repository.IPostRepository
 
 class SavePostWorker(
     applicationContext: Context,
-    params: WorkerParameters
+    params: WorkerParameters,
+    private val repository: IPostRepository
 ) : CoroutineWorker(applicationContext, params) {
 
     companion object {
@@ -22,7 +24,7 @@ class SavePostWorker(
             return Result.failure()
         }
         return try {
-            NMediaApplication.repository.processWork(id)
+            repository.processWork(id)
             Result.success()
         } catch (e: Exception) {
             Result.retry()

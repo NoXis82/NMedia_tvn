@@ -8,18 +8,39 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
 import androidx.navigation.findNavController
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
-import ru.netology.nmedia.application.NMediaApplication
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.fragments.AddNewPost.Companion.textArg
+import ru.netology.nmedia.repository.IPostRepository
 import ru.netology.nmedia.viewmodel.AuthViewModel
+import javax.inject.Inject
 
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
+
+    @Inject
+    lateinit var repository: IPostRepository
+
+    @Inject
+    lateinit var auth: AppAuth
+
+    @Inject
+    lateinit var firebaseInstallations: FirebaseInstallations
+
+    @Inject
+    lateinit var firebaseMessaging: FirebaseMessaging
+
+    @Inject
+    lateinit var googleApiAvailability: GoogleApiAvailability
+
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +66,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             invalidateOptionsMenu()
         }
 
-        FirebaseInstallations.getInstance().id.addOnCompleteListener { task ->
+        firebaseInstallations.id.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -55,7 +76,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             println(token)
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        firebaseMessaging.token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
@@ -93,7 +114,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     .setTitle(R.string.sign_out)
                     .setMessage(R.string.message_sign_out_dialog)
                     .setPositiveButton(R.string.dialog_btn_yes) { _, _ ->
-                        NMediaApplication.appAuth.removeAuth()
+                        auth.removeAuth()
                         findNavController(R.id.nav_host_fragment_container).navigateUp()
                     }
                     .setNegativeButton(R.string.dialog_btn_no) { _, _ ->
@@ -107,7 +128,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun checkGoogleApiAvailability() {
-        with(GoogleApiAvailability.getInstance()) {
+        with(googleApiAvailability) {
             val code = isGooglePlayServicesAvailable(this@MainActivity)
             if (code == ConnectionResult.SUCCESS) {
                 return@with

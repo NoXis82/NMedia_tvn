@@ -2,6 +2,7 @@ package ru.netology.nmedia.application
 
 import android.app.Application
 import androidx.work.*
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,21 +12,27 @@ import ru.netology.nmedia.repository.IPostRepository
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.work.RefreshPostsWorker
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
+@HiltAndroidApp
 class NMediaApplication : Application() {
     private val appScope = CoroutineScope(Dispatchers.Default)
-    companion object {
-        lateinit var repository: IPostRepository
-        lateinit var appAuth: AppAuth
-    }
+
+    @Inject
+    lateinit var appAuth: AppAuth
+
+    @Inject
+    lateinit var workManager: WorkManager
 
     override fun onCreate() {
         super.onCreate()
         setupAuth()
         setupWork()
-        repository = PostRepositoryImpl(AppDb.getInstance(applicationContext).postDao(),
-            AppDb.getInstance(applicationContext).postWorkDao())
-        appAuth = AppAuth.getInstance()
+    }
+    private fun setupAuth() {
+        appScope.launch {
+            appAuth.sendPushToken()
+        }
     }
 
     private fun setupWork() {
@@ -36,7 +43,7 @@ class NMediaApplication : Application() {
             val request = PeriodicWorkRequestBuilder<RefreshPostsWorker>(15, TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
-            WorkManager.getInstance(this@NMediaApplication).enqueueUniquePeriodicWork(
+            workManager.enqueueUniquePeriodicWork(
                 RefreshPostsWorker.name,
                 ExistingPeriodicWorkPolicy.KEEP,
                 request
@@ -44,9 +51,5 @@ class NMediaApplication : Application() {
         }
     }
 
-    private fun setupAuth() {
-        appScope.launch {
-            AppAuth.initApp(this@NMediaApplication)
-        }
-    }
+
 }

@@ -7,8 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.EditPost.Companion.authorEdit
 import ru.netology.nmedia.fragments.EditPost.Companion.contentEdit
@@ -17,7 +18,8 @@ import ru.netology.nmedia.databinding.FragmentPostReviewBinding
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
+@ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class PostReview : Fragment() {
 
     companion object {
