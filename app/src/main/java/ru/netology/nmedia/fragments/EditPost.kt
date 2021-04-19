@@ -16,7 +16,6 @@ import ru.netology.nmedia.databinding.FragmentEditPostBinding
 import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-
 @ExperimentalCoroutinesApi
 class EditPost : Fragment() {
     companion object {

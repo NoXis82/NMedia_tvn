@@ -2,8 +2,8 @@ package ru.netology.nmedia.api
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.netology.nmedia.model.ApiError
 import ru.netology.nmedia.model.ApiException
+import ru.netology.nmedia.model.AppError
 import java.net.HttpURLConnection
 
 class PostsInterceptor : Interceptor {
@@ -13,9 +13,9 @@ class PostsInterceptor : Interceptor {
                 when {
                     response.isSuccessful -> response
                     response.code == HttpURLConnection.HTTP_INTERNAL_ERROR -> throw ApiException(
-                        ApiError.ServerError
+                        AppError(response.code, response.message)
                     )
-                    else -> throw ApiException(ApiError.UnknownException)
+                    else -> throw ApiException(AppError(response.code, response.message))
                 }
             }
 }

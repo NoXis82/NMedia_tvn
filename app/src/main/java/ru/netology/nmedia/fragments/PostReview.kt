@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.R
 import ru.netology.nmedia.fragments.EditPost.Companion.authorEdit
@@ -26,7 +25,6 @@ class PostReview : Fragment() {
         var Bundle.author: String? by StringArg
         var Bundle.published: String? by StringArg
         var Bundle.content: String? by StringArg
-        //   var Bundle.videoUrl: String? by StringArg
     }
 
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)

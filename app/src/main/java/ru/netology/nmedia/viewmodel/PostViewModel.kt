@@ -1,9 +1,10 @@
 package ru.netology.nmedia.viewmodel
 
-
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
+import androidx.paging.PagingData
+import androidx.paging.map
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -47,16 +48,17 @@ class PostViewModel @Inject constructor(
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
-    val posts: LiveData<List<Post>>
-        get() = auth
-            .authStateFlow
-            .flatMapLatest { (myId, _) ->
-                repository.posts
-                    .map { posts ->
-                        posts.map { it.copy(ownedByMe = it.authorId == myId) }
-                    }
-            }.asLiveData(Dispatchers.Default)
 
+    val posts: Flow<PagingData<Post>> = auth
+        .authStateFlow
+        .flatMapLatest { (myId, _) ->
+            repository.posts
+                .map { posts ->
+                    posts.map { post ->
+                        post.copy(ownedByMe = post.authorId == myId)
+                    }
+                }
+        }
     private val _postsRefreshError = SingleLiveEvent<Unit>()
     val postsRefreshError: LiveData<Unit>
         get() = _postsRefreshError
@@ -68,11 +70,6 @@ class PostViewModel @Inject constructor(
     private val _postLikeError = SingleLiveEvent<Unit>()
     val postLikeError: LiveData<Unit>
         get() = _postLikeError
-
-    val newPosts = posts.switchMap {
-        repository.getNewerCount(it.firstOrNull()?.id ?: 0L)
-            .asLiveData()
-    }
 
     private val _photo = MutableLiveData(noPhoto)
     val photo: LiveData<PhotoModel>
@@ -88,26 +85,6 @@ class PostViewModel @Inject constructor(
 
     fun changePhoto(uri: Uri?) {
         _photo.value = PhotoModel(uri)
-    }
-
-    fun checkNewPost(count: Int) {
-        if (count > 0) {
-            _state.value = FeedModel(visibleFab = true)
-        }
-    }
-
-    fun getNewerPosts() {
-        viewModelScope.launch {
-            try {
-                val newerPosts = repository.getNewerList(posts.value?.firstOrNull()?.id ?: 0L)
-                newerPosts.collect { posts ->
-                    repository.sendNewer(posts)
-                }
-                _state.value = FeedModel(visibleFab = false)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
     }
 
     fun like(post: Post) {

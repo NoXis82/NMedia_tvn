@@ -3,6 +3,7 @@ package ru.netology.nmedia.api
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
@@ -52,6 +53,15 @@ interface PostApiService {
         @Field("pass") pass: String,
         @Field("name") name: String
     ): AuthState
+
+    @GET("posts/latest")
+    suspend fun getLatest(@Query("count") count: Int): Response<List<Post>>
+
+    @GET("posts/{id}/before")
+    suspend fun getBefore(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
 
     @POST("users/push-tokens")
     suspend fun push(@Body pushToken: PushToken): Unit
