@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion 29
@@ -40,7 +41,7 @@ android {
         }
         debug {
             manifestPlaceholders.usesCleartextTraffic = true
-            buildConfigField "String", "BASE_URL", '"http://192.168.0.103:9999/api/"'
+            buildConfigField "String", "BASE_URL", '"http://172.20.10.8:9999/api/"'
         }
     }
 }
@@ -81,6 +82,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
+    //ImagePicker
     implementation "com.github.dhaval2404:imagepicker:$imagepicker_version"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
@@ -97,15 +99,34 @@ dependencies {
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test.ext:junit:$ext_junit_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
+
+    //Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitgson_version"
+
+    //OkHttp
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttploggin_version"
+
+    //Glide
     implementation "com.github.bumptech.glide:glide:$glide_version"
+
+    //hilt
+    def hilt_viewmodel_version = "1.0.0-alpha03"
+    def hilt_compiler_version = "1.0.0-beta01"
+    def hilt_work_version = "1.0.0-beta01"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hilt_viewmodel_version"
+    implementation "androidx.hilt:hilt-work:$hilt_work_version"
+    kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-compiler:$hilt_version"
+    annotationProcessor "androidx.hilt:hilt-compiler:$hilt_compiler_version"
+
 
     //workmanager
     def workmanager_version = "2.5.0"
     implementation "androidx.work:work-runtime-ktx:$workmanager_version"
 
+    //coroutines
     def coroutines_version = "1.4.3"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"

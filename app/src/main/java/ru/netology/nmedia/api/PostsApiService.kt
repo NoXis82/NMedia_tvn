@@ -15,35 +15,6 @@ import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.PushToken
 import java.util.concurrent.TimeUnit
 
-private val logging = HttpLoggingInterceptor()
-    .apply {
-        if (BuildConfig.DEBUG) {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
-    }
-
-private val client = OkHttpClient.Builder()
-    .connectTimeout(30, TimeUnit.SECONDS)
-    .addInterceptor(PostsInterceptor())
-    .addInterceptor(logging)
-    .addInterceptor { chain ->
-        NMediaApplication.appAuth.authStateFlow.value.token?.let { token ->
-            val newRequest = chain.request().newBuilder()
-                .addHeader("Authorization", token)
-                .build()
-            return@addInterceptor chain.proceed(newRequest)
-        }
-        chain.proceed(chain.request())
-    }
-    .build()
-
-
-private val retrofit = Retrofit.Builder()
-    .baseUrl(BuildConfig.BASE_URL)
-    .addConverterFactory(GsonConverterFactory.create())
-    .client(client)
-    .build()
-
 interface PostApiService {
     @GET("posts")
     suspend fun getAll(): List<Post>
@@ -85,8 +56,4 @@ interface PostApiService {
     @POST("users/push-tokens")
     suspend fun push(@Body pushToken: PushToken): Unit
 
-}
-
-object PostsApi {
-    val retrofitService: PostApiService by lazy(retrofit::create)
 }

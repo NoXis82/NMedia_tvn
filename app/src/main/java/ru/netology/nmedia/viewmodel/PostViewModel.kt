@@ -1,30 +1,32 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
-import android.content.Intent
+
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.work.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.R
-import ru.netology.nmedia.application.NMediaApplication
-import ru.netology.nmedia.application.NMediaApplication.Companion.repository
+import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 import ru.netology.nmedia.enumeration.PostState
 import ru.netology.nmedia.model.FeedModel
+import ru.netology.nmedia.repository.IPostRepository
 import ru.netology.nmedia.utils.SingleLiveEvent
 import ru.netology.nmedia.work.*
 import java.io.IOException
+import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
-class PostViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class PostViewModel @Inject constructor(
+    private val repository: IPostRepository,
+    private val workManager: WorkManager,
+    private val auth: AppAuth
+) : ViewModel() {
 
     var isHandledBackPressed: String = ""
     private val empty = Post(
@@ -45,12 +47,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
         get() = _postCreated
-
-    private val workManager: WorkManager =
-        WorkManager.getInstance(application)
-
     val posts: LiveData<List<Post>>
-        get() = NMediaApplication.appAuth
+        get() = auth
             .authStateFlow
             .flatMapLatest { (myId, _) ->
                 repository.posts
@@ -85,7 +83,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun checkSignIn(): Boolean {
-        return NMediaApplication.appAuth.authStateFlow.value.id != 0L
+        return auth.authStateFlow.value.id != 0L
     }
 
     fun changePhoto(uri: Uri?) {
@@ -226,20 +224,5 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun editContent(post: Post) {
         edited.value = post
-    }
-
-    fun sharePost(post: Post) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, post.content)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(
-            intent,
-            R.string.chooser_share_post.toString()
-        ).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        getApplication<Application>().startActivity(shareIntent)
     }
 }

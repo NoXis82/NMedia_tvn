@@ -1,6 +1,8 @@
 package ru.netology.nmedia.fragments
 
 import android.app.AlertDialog
+import android.app.Application
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,10 +10,10 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.nmedia.fragments.ImageViewFragment.Companion.urlImage
 import ru.netology.nmedia.R
@@ -29,10 +31,10 @@ import ru.netology.nmedia.fragments.EditPost.Companion.publishedEdit
 import ru.netology.nmedia.model.getCreateReadableMessageError
 import ru.netology.nmedia.viewmodel.PostViewModel
 
+@ExperimentalCoroutinesApi
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
 
-    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -53,8 +55,18 @@ class FeedFragment : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                checkPost = post
-                viewModel.sharePost(post)
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, post.content)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(
+                    intent,
+                    R.string.chooser_share_post.toString()
+                ).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(shareIntent)
             }
 
             override fun onRemove(post: Post) {
