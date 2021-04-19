@@ -1,17 +1,14 @@
 package ru.netology.nmedia.viewmodel
 
-import android.app.Application
-import android.content.Intent
+
 import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.R
 import ru.netology.nmedia.auth.AppAuth
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity

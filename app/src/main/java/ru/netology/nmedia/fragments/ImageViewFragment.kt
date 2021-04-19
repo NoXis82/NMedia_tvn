@@ -11,7 +11,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentImageViewBinding
 import ru.netology.nmedia.utils.StringArg
 
-@AndroidEntryPoint
 class ImageViewFragment : Fragment() {
     companion object {
         var Bundle.urlImage: String? by StringArg

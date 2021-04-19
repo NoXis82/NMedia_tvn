@@ -14,7 +14,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSignInBinding
 import ru.netology.nmedia.viewmodel.SignInViewModel
 
-@AndroidEntryPoint
 class SignInFragment : Fragment() {
     private val viewModel: SignInViewModel by viewModels()
     override fun onCreateView(

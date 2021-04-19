@@ -20,7 +20,6 @@ import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @ExperimentalCoroutinesApi
-@AndroidEntryPoint
 class AddNewPost : Fragment() {
     private val photoRequestCode = 1
     private val cameraRequestCode = 2

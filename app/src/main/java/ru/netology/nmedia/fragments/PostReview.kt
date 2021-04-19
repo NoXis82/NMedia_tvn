@@ -19,7 +19,6 @@ import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @ExperimentalCoroutinesApi
-@AndroidEntryPoint
 class PostReview : Fragment() {
 
     companion object {

@@ -18,7 +18,6 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 
 @ExperimentalCoroutinesApi
-@AndroidEntryPoint
 class EditPost : Fragment() {
     companion object {
         var Bundle.authorEdit: String? by StringArg

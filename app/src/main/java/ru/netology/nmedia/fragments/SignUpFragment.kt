@@ -13,7 +13,6 @@ import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentSignUpBinding
 import ru.netology.nmedia.viewmodel.SignUpViewModel
 
-@AndroidEntryPoint
 class SignUpFragment : Fragment() {
     private val viewModel: SignUpViewModel by viewModels()
 
