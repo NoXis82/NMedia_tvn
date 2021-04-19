@@ -121,6 +121,9 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
     annotationProcessor "androidx.hilt:hilt-compiler:$hilt_compiler_version"
 
+    //pages
+    def paging_version = "3.0.0-beta03"
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     //workmanager
     def workmanager_version = "2.5.0"
