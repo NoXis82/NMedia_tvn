@@ -4,7 +4,6 @@ import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import androidx.paging.map
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -122,19 +121,6 @@ class PostViewModel @Inject constructor(
                 workManager.enqueue(request)
             } catch (e: IOException) {
                 _postRemoveError.value = Unit
-            }
-        }
-    }
-
-    fun refreshingPosts() {
-        viewModelScope.launch {
-            _state.value = FeedModel(refreshing = true)
-            try {
-                val posts = repository.getAll()
-                _state.value = FeedModel(empty = posts.isEmpty())
-            } catch (e: IOException) {
-                _state.value = FeedModel(refreshing = false)
-                _postsRefreshError.value = Unit
             }
         }
     }

@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -38,10 +37,9 @@ class FeedFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ) = FragmentFeedBinding.inflate(layoutInflater).apply {
         var removeId = 0L
         var checkPost = Post()
-        val binding = FragmentFeedBinding.inflate(layoutInflater)
         val adapter = PostsAdapter(object : IOnInteractionListener {
 
             override fun onLike(post: Post) {
@@ -82,7 +80,6 @@ class FeedFragment : Fragment() {
                         author = post.author
                         published = post.published
                         content = post.content
-                        // videoUrl = post.videoUrl
                     })
             }
 
@@ -109,39 +106,38 @@ class FeedFragment : Fragment() {
                     })
             }
         })
-        binding.swipeRefreshLayout.setOnRefreshListener(adapter::refresh)
-        binding.fab.setOnClickListener {
+        swipeRefreshLayout.setOnRefreshListener(adapter::refresh)
+        fab.setOnClickListener {
             if (viewModel.checkSignIn()) {
                 findNavController().navigate(R.id.action_feedFragment_to_addNewPost)
             } else {
                 dialogSign()
             }
         }
-        binding.rvPostList.adapter = adapter
+        rvPostList.adapter = adapter
         lifecycleScope.launchWhenCreated {
             viewModel.posts.collectLatest(adapter::submitData)
         }
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest { state ->
-                binding.swipeRefreshLayout.isRefreshing =
+                swipeRefreshLayout.isRefreshing =
                     state.refresh is LoadState.Loading ||
                             state.prepend is LoadState.Loading ||
                             state.append is LoadState.Loading
             }
         }
         viewModel.state.observe(viewLifecycleOwner) { model ->
-            binding.groupStatus.isVisible = model.errorVisible
-            binding.tvTextStatusEmpty.isVisible = model.empty
-            binding.tvTextStatusError.text = model.error?.code
-            binding.pbProgress.isVisible = model.loading
-            binding.swipeRefreshLayout.isRefreshing = model.refreshing
-            binding.fabExtended.isVisible = model.visibleFab
+            groupStatus.isVisible = model.errorVisible
+            tvTextStatusEmpty.isVisible = model.empty
+            tvTextStatusError.text = model.error?.code
+            pbProgress.isVisible = model.loading
+            swipeRefreshLayout.isRefreshing = model.refreshing
+            fabExtended.isVisible = model.visibleFab
         }
-        binding.errorButton.setOnClickListener {
+        errorButton.setOnClickListener {
             viewModel.loadPosts()
         }
-        return binding.root
-    }
+    }.root
 
     private fun dialogSign() {
         AlertDialog.Builder(view?.context)

@@ -3,7 +3,6 @@ package ru.netology.nmedia.fragments
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -17,6 +16,7 @@ import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class EditPost : Fragment() {
     companion object {
         var Bundle.authorEdit: String? by StringArg
@@ -30,14 +30,13 @@ class EditPost : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = FragmentEditPostBinding.inflate(layoutInflater)
-        binding.author.text = arguments?.authorEdit
-        binding.published.text = arguments?.publishedEdit
-        arguments?.contentEdit?.let(binding.editContent::setText)
-        binding.editContent.requestFocus()
-        binding.btnSavePost.setOnClickListener {
-            with(binding.editContent) {
+    ) = FragmentEditPostBinding.inflate(layoutInflater).apply {
+        author.text = arguments?.authorEdit
+        published.text = arguments?.publishedEdit
+        arguments?.contentEdit?.let(editContent::setText)
+        editContent.requestFocus()
+        btnSavePost.setOnClickListener {
+            with(editContent) {
                 if (TextUtils.isEmpty(text)) {
                     Toast.makeText(
                         context,
@@ -46,11 +45,10 @@ class EditPost : Fragment() {
                     ).show()
                     return@setOnClickListener
                 }
-                viewModel.changeContent(binding.editContent.text.toString())
+                viewModel.changeContent(editContent.text.toString())
                 viewModel.savePost()
                 findNavController().navigate(R.id.action_editPost_to_feedFragment)
             }
         }
-        return binding.root
-    }
+    }.root
 }

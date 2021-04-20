@@ -5,12 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.installations.FirebaseInstallations
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,9 +34,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     @Inject
     lateinit var firebaseMessaging: FirebaseMessaging
-
-    @Inject
-    lateinit var googleApiAvailability: GoogleApiAvailability
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -73,7 +67,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             val token = task.result
-            println(token)
+
         }
 
         firebaseMessaging.token.addOnCompleteListener { task ->
@@ -83,9 +77,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             }
 
             val token = task.result
-            println(token)
+
         }
-        checkGoogleApiAvailability()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -127,18 +121,4 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun checkGoogleApiAvailability() {
-        with(googleApiAvailability) {
-            val code = isGooglePlayServicesAvailable(this@MainActivity)
-            if (code == ConnectionResult.SUCCESS) {
-                return@with
-            }
-            if (isUserResolvableError(code)) {
-                getErrorDialog(this@MainActivity, code, 9000).show()
-                return
-            }
-            Toast.makeText(this@MainActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
-                .show()
-        }
-    }
 }

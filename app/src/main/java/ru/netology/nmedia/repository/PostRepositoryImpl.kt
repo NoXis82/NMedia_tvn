@@ -16,6 +16,8 @@ import ru.netology.nmedia.dao.*
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.*
 import ru.netology.nmedia.enumeration.*
+import ru.netology.nmedia.model.ApiError
+import ru.netology.nmedia.model.AppError
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -30,34 +32,20 @@ class PostRepositoryImpl @Inject constructor(
         pagingSourceFactory = { PostPagingSource(apiService) }
     ).flow
 
-//    override val posts: Flow<List<Post>>
-//        get() = dao.getAll().map {
-//            it.sortedWith(Comparator { o1, o2 ->
-//                when {
-//                    o1.id == 0L && o2.id == 0L -> o1.localId.compareTo(o2.localId)
-//                    o1.id == 0L -> -1
-//                    o2.id == 0L -> 1
-//                    else -> -o1.id.compareTo(o2.id)
-//                }
-//            })
-//                .map(PostEntity::toDto)
-//        }
-//            .flowOn(Dispatchers.Default)
-
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
             val newer = apiService.getNewer(id)
             emit(newer.size)
         }
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
 
     override fun getNewerList(id: Long): Flow<List<Post>> = flow {
         val posts = apiService.getNewer(id)
         emit(posts)
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
 
 
@@ -156,7 +144,7 @@ class PostRepositoryImpl @Inject constructor(
             )
             postWorkDao.removeById(id)
         } catch (e: Exception) {
-            e.printStackTrace()
+            throw ApiError.fromThrowable(e)
         }
     }
 
