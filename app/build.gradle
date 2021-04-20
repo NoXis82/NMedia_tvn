@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
+
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-parcelize'
 
@@ -136,7 +136,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutines_version"
 
     //firebase
-    def firebase_version = "26.8.0"
-    implementation platform("com.google.firebase:firebase-bom:$firebase_version")
-    implementation "com.google.firebase:firebase-messaging-ktx"
+    //def firebase_version = "26.8.0"
+   // implementation platform("com.google.firebase:firebase-bom:$firebase_version")
+   // implementation "com.google.firebase:firebase-messaging-ktx"
 }

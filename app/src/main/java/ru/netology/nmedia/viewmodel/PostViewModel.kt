@@ -128,19 +128,6 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun refreshingPosts() {
-        viewModelScope.launch {
-            _state.value = FeedModel(refreshing = true)
-            try {
-                val posts = repository.getAll()
-                _state.value = FeedModel(empty = posts.isEmpty())
-            } catch (e: IOException) {
-                _state.value = FeedModel(refreshing = false)
-                _postsRefreshError.value = Unit
-            }
-        }
-    }
-
     fun loadPosts() {
         viewModelScope.launch {
             _state.value = FeedModel(loading = true)
