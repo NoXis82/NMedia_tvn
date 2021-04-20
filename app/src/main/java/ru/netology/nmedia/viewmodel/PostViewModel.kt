@@ -50,10 +50,12 @@ class PostViewModel @Inject constructor(
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
+    private val cached = repository.posts.cachedIn(viewModelScope)
+
     val posts: Flow<PagingData<Post>> = auth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.posts
+            cached
                 .map { posts ->
                     posts.map { post ->
                         post.copy(ownedByMe = post.authorId == myId)

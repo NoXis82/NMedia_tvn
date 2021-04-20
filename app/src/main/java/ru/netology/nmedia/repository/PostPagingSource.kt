@@ -3,6 +3,7 @@ package ru.netology.nmedia.repository
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import ru.netology.nmedia.api.PostApiService
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.AppError
 

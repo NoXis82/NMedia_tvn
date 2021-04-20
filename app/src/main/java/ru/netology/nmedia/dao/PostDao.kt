@@ -1,5 +1,6 @@
 package ru.netology.nmedia.dao
 
+import androidx.paging.PagingSource
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.entity.PostEntity
@@ -8,7 +9,7 @@ import ru.netology.nmedia.entity.PostEntity
 interface PostDao {
 
     @Query("SELECT * FROM PostEntity")
-    fun getAll(): Flow<List<PostEntity>>
+    fun getAll(): PagingSource<Int, PostEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity): Long

@@ -5,6 +5,7 @@ import androidx.core.net.toFile
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
@@ -25,24 +26,15 @@ class PostRepositoryImpl @Inject constructor(
     private val apiService: PostApiService,
     private val auth: AppAuth
 ) : IPostRepository {
-    override val posts: Flow<PagingData<Post>> = Pager(
-        config = PagingConfig(pageSize = 5, enablePlaceholders = false),
-        pagingSourceFactory = { PostPagingSource(apiService) }
-    ).flow
 
-//    override val posts: Flow<List<Post>>
-//        get() = dao.getAll().map {
-//            it.sortedWith(Comparator { o1, o2 ->
-//                when {
-//                    o1.id == 0L && o2.id == 0L -> o1.localId.compareTo(o2.localId)
-//                    o1.id == 0L -> -1
-//                    o2.id == 0L -> 1
-//                    else -> -o1.id.compareTo(o2.id)
-//                }
-//            })
-//                .map(PostEntity::toDto)
-//        }
-//            .flowOn(Dispatchers.Default)
+    override val posts: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 5, enablePlaceholders = false)
+    ) {
+        dao.getAll()
+    }.flow
+        .map { pagingData ->
+            pagingData.map(PostEntity::toDto)
+        }
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
