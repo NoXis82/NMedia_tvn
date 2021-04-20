@@ -20,6 +20,7 @@ import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class AddNewPost : Fragment() {
     private val photoRequestCode = 1
     private val cameraRequestCode = 2
@@ -59,8 +60,7 @@ class AddNewPost : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = FragmentAddNewPostBinding.inflate(layoutInflater)
+    ) = FragmentAddNewPostBinding.inflate(layoutInflater).also { binding ->
         fragmentBinding = binding
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -107,10 +107,7 @@ class AddNewPost : Fragment() {
             binding.photoContainer.isVisible = true
             binding.photo.setImageURI(it.uri)
         }
-        return binding.root
-    }
-
-
+    }.root
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -127,7 +124,6 @@ class AddNewPost : Fragment() {
             val url = data?.data
             viewModel.changePhoto(url)
         }
-
     }
 
     override fun onDestroyView() {

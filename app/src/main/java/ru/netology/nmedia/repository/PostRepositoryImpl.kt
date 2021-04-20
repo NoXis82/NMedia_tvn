@@ -17,6 +17,7 @@ import ru.netology.nmedia.dao.*
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.*
 import ru.netology.nmedia.enumeration.*
+import ru.netology.nmedia.model.ApiError
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -42,14 +43,14 @@ class PostRepositoryImpl @Inject constructor(
             emit(newer.size)
         }
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
 
     override fun getNewerList(id: Long): Flow<List<Post>> = flow {
         val posts = apiService.getNewer(id)
         emit(posts)
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
 
 
@@ -148,7 +149,7 @@ class PostRepositoryImpl @Inject constructor(
             )
             postWorkDao.removeById(id)
         } catch (e: Exception) {
-            e.printStackTrace()
+            throw ApiError.fromThrowable(e)
         }
     }
 
