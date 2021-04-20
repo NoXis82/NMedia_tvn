@@ -12,9 +12,6 @@ class PostsInterceptor : Interceptor {
             .let { response ->
                 when {
                     response.isSuccessful -> response
-                    response.code == HttpURLConnection.HTTP_INTERNAL_ERROR -> throw ApiException(
-                        AppError(response.code, response.message)
-                    )
                     else -> throw ApiException(AppError(response.code, response.message))
                 }
             }

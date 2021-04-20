@@ -32,15 +32,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     @Inject
     lateinit var auth: AppAuth
 
-    @Inject
-    lateinit var firebaseInstallations: FirebaseInstallations
-
-    @Inject
-    lateinit var firebaseMessaging: FirebaseMessaging
-
-    @Inject
-    lateinit var googleApiAvailability: GoogleApiAvailability
-
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,26 +57,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             invalidateOptionsMenu()
         }
 
-        firebaseInstallations.id.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                println("some stuff happened: ${task.exception}")
-                return@addOnCompleteListener
-            }
-
-            val token = task.result
-            println(token)
-        }
-
-        firebaseMessaging.token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                println("some stuff happened: ${task.exception}")
-                return@addOnCompleteListener
-            }
-
-            val token = task.result
-            println(token)
-        }
-        checkGoogleApiAvailability()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -124,21 +95,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun checkGoogleApiAvailability() {
-        with(googleApiAvailability) {
-            val code = isGooglePlayServicesAvailable(this@MainActivity)
-            if (code == ConnectionResult.SUCCESS) {
-                return@with
-            }
-            if (isUserResolvableError(code)) {
-                getErrorDialog(this@MainActivity, code, 9000).show()
-                return
-            }
-            Toast.makeText(this@MainActivity, R.string.google_play_unavailable, Toast.LENGTH_LONG)
-                .show()
         }
     }
 }
