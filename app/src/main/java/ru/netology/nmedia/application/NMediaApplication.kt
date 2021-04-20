@@ -31,15 +31,10 @@ class NMediaApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        setupAuth()
         setupWork()
     }
 
-    private fun setupAuth() {
-        appScope.launch {
-            appAuth.sendPushToken()
-        }
-    }
+
 
     private fun setupWork() {
         appScope.launch {
