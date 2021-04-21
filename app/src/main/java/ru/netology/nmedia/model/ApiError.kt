@@ -1,6 +1,5 @@
 package ru.netology.nmedia.model
 
-
 import java.lang.RuntimeException
 import java.net.ConnectException
 import java.sql.SQLException

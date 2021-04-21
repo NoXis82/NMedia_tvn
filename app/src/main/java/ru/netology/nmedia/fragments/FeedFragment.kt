@@ -33,15 +33,14 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
+    var removeId = 0L
+    var checkPost = Post()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = FragmentFeedBinding.inflate(layoutInflater).apply {
-        var removeId = 0L
-        var checkPost = Post()
         val adapter = PostsAdapter(object : IOnInteractionListener {
-
             override fun onLike(post: Post) {
                 if (viewModel.checkSignIn()) {
                     checkPost = post

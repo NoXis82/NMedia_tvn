@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dto.PushToken
+import ru.netology.nmedia.model.ApiError
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,7 +48,7 @@ class AppAuth @Inject constructor(
                 val pushToken = PushToken(token ?: Firebase.messaging.token.await())
                 apiService.push(pushToken)
             } catch (e: Exception) {
-                e.printStackTrace()
+                 ApiError.fromThrowable(e)
             }
         }
     }

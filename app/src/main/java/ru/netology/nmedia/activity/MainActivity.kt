@@ -65,9 +65,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
             }
-
             val token = task.result
-
         }
 
         firebaseMessaging.token.addOnCompleteListener { task ->
@@ -75,11 +73,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 println("some stuff happened: ${task.exception}")
                 return@addOnCompleteListener
             }
-
             val token = task.result
-
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

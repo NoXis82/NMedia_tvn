@@ -5,6 +5,7 @@ import androidx.core.net.toFile
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
@@ -17,20 +18,31 @@ import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.*
 import ru.netology.nmedia.enumeration.*
 import ru.netology.nmedia.model.ApiError
-import ru.netology.nmedia.model.AppError
 import java.lang.Exception
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PostRepositoryImpl @Inject constructor(
     private val dao: PostDao,
     private val postWorkDao: PostWorkDao,
     private val apiService: PostApiService,
     private val auth: AppAuth
 ) : IPostRepository {
+
     override val posts: Flow<PagingData<Post>> = Pager(
         config = PagingConfig(pageSize = 5, enablePlaceholders = false),
         pagingSourceFactory = { PostPagingSource(apiService) }
     ).flow
+
+    override val postsDao: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = 5, enablePlaceholders = false)
+    ) {
+        dao.getAll()
+    }.flow
+        .map { pagingData ->
+            pagingData.map(PostEntity::toDto)
+        }
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
@@ -47,7 +59,6 @@ class PostRepositoryImpl @Inject constructor(
     }
         .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
-
 
     override suspend fun getAll(): List<Post> {
         val netPosts = apiService.getAll()

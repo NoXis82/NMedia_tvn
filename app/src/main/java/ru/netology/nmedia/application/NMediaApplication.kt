@@ -19,7 +19,6 @@ import javax.inject.Inject
 class NMediaApplication : Application(), Configuration.Provider {
     private val appScope = CoroutineScope(Dispatchers.Default)
 
-
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
