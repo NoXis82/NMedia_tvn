@@ -16,8 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppAuth @Inject constructor(
-    private val prefs: SharedPreferences,
-    private val apiService: PostApiService
+    private val prefs: SharedPreferences
 ) {
     companion object {
         val idKey = "id"
@@ -39,18 +38,6 @@ class AppAuth @Inject constructor(
         } else {
             _authStateFlow = MutableStateFlow(AuthState(id, token))
         }
-        sendPushToken()
-    }
-
-    fun sendPushToken(token: String? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
-                val pushToken = PushToken(token ?: Firebase.messaging.token.await())
-                apiService.push(pushToken)
-            } catch (e: Exception) {
-                 ApiError.fromThrowable(e)
-            }
-        }
     }
 
     val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
@@ -63,7 +50,6 @@ class AppAuth @Inject constructor(
             putString(tokenKey, token)
             apply()
         }
-        sendPushToken()
     }
 
     @Synchronized
@@ -73,7 +59,6 @@ class AppAuth @Inject constructor(
             clear()
             commit()
         }
-        sendPushToken()
     }
 
 }

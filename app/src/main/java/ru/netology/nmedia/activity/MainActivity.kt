@@ -29,12 +29,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     @Inject
     lateinit var auth: AppAuth
 
-    @Inject
-    lateinit var firebaseInstallations: FirebaseInstallations
-
-    @Inject
-    lateinit var firebaseMessaging: FirebaseMessaging
-
     private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,22 +52,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
         viewModel.data.observe(this) {
             invalidateOptionsMenu()
-        }
-
-        firebaseInstallations.id.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                println("some stuff happened: ${task.exception}")
-                return@addOnCompleteListener
-            }
-            val token = task.result
-        }
-
-        firebaseMessaging.token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                println("some stuff happened: ${task.exception}")
-                return@addOnCompleteListener
-            }
-            val token = task.result
         }
     }
 

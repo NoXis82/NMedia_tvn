@@ -23,21 +23,11 @@ class NMediaApplication : Application(), Configuration.Provider {
     lateinit var workerFactory: HiltWorkerFactory
 
     @Inject
-    lateinit var appAuth: AppAuth
-
-    @Inject
     lateinit var workManager: WorkManager
 
     override fun onCreate() {
         super.onCreate()
-        setupAuth()
         setupWork()
-    }
-
-    private fun setupAuth() {
-        appScope.launch {
-            appAuth.sendPushToken()
-        }
     }
 
     private fun setupWork() {
