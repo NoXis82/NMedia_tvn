@@ -15,7 +15,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
             error("Multiple observers registered but only one will be notified of changes.")
         }
 
-        super.observe(owner, Observer<T> { t ->
+        super.observe(owner, { t ->
             if (pending.compareAndSet(true, false)) {
                 observer.onChanged(t)
             }
