@@ -51,7 +51,7 @@ class PostViewHolder(
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
             Glide.with(avatar)
-                .load("http://192.168.0.103:9999/avatars/${post.authorAvatar}")
+                .load("http://192.168.0.106:9999/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_account_circle_48)
                 .timeout(10_000)
                 .circleCrop()

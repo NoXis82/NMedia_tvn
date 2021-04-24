@@ -49,16 +49,16 @@ class PostViewModel @Inject constructor(
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-    val postsDao: Flow<PagingData<Post>> = auth
-        .authStateFlow
-        .flatMapLatest { (myId, _) ->
-            repository.postsDao
-                .map { posts ->
-                    posts.map { post ->
-                        post.copy(ownedByMe = post.authorId == myId)
-                    }
-                }
-        }
+//    val postsDao: Flow<PagingData<Post>> = auth
+//        .authStateFlow
+//        .flatMapLatest { (myId, _) ->
+//            repository.postsDao
+//                .map { posts ->
+//                    posts.map { post ->
+//                        post.copy(ownedByMe = post.authorId == myId)
+//                    }
+//                }
+//        }
 
     val posts: Flow<PagingData<Post>> = auth
         .authStateFlow

@@ -8,11 +8,18 @@ import ru.netology.nmedia.entity.PostEntity
 @Dao
 interface PostDao {
 
-    @Query("SELECT * FROM PostEntity")
-    fun getAll(): PagingSource<Int, PostEntity>
+    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
+    fun getAll(): Flow<List<PostEntity>>
+
+    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
+    fun pagingSource(): PagingSource<Int, PostEntity>
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(posts: List<PostEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNewer(posts: List<PostEntity>)
