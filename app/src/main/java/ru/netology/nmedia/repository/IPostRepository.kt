@@ -9,7 +9,6 @@ import ru.netology.nmedia.entity.PostEntity
 
 interface IPostRepository {
     val posts : Flow<PagingData<Post>>
-    val postsDao : Flow<PagingData<Post>>
     fun getNewerCount(id: Long): Flow<Int>
     fun getNewerList(id: Long): Flow<List<Post>>
     suspend fun getAll(): List<Post>

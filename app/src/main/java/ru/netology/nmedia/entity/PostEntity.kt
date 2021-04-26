@@ -85,7 +85,6 @@ class PostStateConverter {
     @TypeConverter
     fun toPostState(raw: String): PostState = PostState.values()
         .find { it.name == raw } ?: PostState.Success
-
     @TypeConverter
     fun fromPostState(postState: PostState): String = postState.name
 }

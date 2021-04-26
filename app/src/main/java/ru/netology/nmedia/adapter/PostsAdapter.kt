@@ -7,9 +7,9 @@ import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import ru.netology.nmedia.BuildConfig
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.PostCardBinding
 import ru.netology.nmedia.dto.*
@@ -42,7 +42,7 @@ class PostViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
-            author.text = post.author
+            author.text = "${post.id} : ${post.author}"
             published.text = post.published
             content.text = post.content
             likes.text = formatCountToStr(post.likes)
@@ -51,7 +51,7 @@ class PostViewHolder(
             viewCount.text = formatCountToStr(post.views)
             if (post.likes > 0) likes.isChecked = post.likedByMe else likes.isChecked = false
             Glide.with(avatar)
-                .load("http://192.168.0.106:9999/avatars/${post.authorAvatar}")
+                .load("${BuildConfig.BASE_URL}/avatars/${post.authorAvatar}")
                 .placeholder(R.drawable.ic_account_circle_48)
                 .timeout(10_000)
                 .circleCrop()
@@ -62,7 +62,7 @@ class PostViewHolder(
             if (post.attachment != null && post.attachment.type == AttachmentType.IMAGE) {
                 frameAttachView.visibility = View.VISIBLE
                 Glide.with(ivImageAttachPost)
-                    .load("http://192.168.0.103:9999/media/${post.attachment.url}")
+                    .load("${BuildConfig.BASE_URL}/media/${post.attachment.url}")
                     .placeholder(R.drawable.ic_attach_error_48)
                     .timeout(10_000)
                     .into(ivImageAttachPost)

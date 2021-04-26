@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toFile
 import androidx.lifecycle.*
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import androidx.work.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,21 +50,12 @@ class PostViewModel @Inject constructor(
     val postCreated: LiveData<Unit>
         get() = _postCreated
 
-//    val postsDao: Flow<PagingData<Post>> = auth
-//        .authStateFlow
-//        .flatMapLatest { (myId, _) ->
-//            repository.postsDao
-//                .map { posts ->
-//                    posts.map { post ->
-//                        post.copy(ownedByMe = post.authorId == myId)
-//                    }
-//                }
-//        }
+    private val cached = repository.posts.cachedIn(viewModelScope)
 
     val posts: Flow<PagingData<Post>> = auth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
-            repository.posts
+            cached
                 .map { posts ->
                     posts.map { post ->
                         post.copy(ownedByMe = post.authorId == myId)
