@@ -1,15 +1,14 @@
 package ru.netology.nmedia.work
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.repository.IPostRepository
 
 @HiltWorker
@@ -24,7 +23,7 @@ class RefreshPostsWorker @AssistedInject  constructor (
 
     override suspend fun doWork(): Result = withContext(Dispatchers.Default) {
         try {
-            repository.getAll()
+            repository.refreshPostsWorker()
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()

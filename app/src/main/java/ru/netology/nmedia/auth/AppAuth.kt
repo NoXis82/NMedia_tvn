@@ -10,13 +10,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ru.netology.nmedia.api.PostApiService
 import ru.netology.nmedia.dto.PushToken
+import ru.netology.nmedia.model.ApiError
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AppAuth @Inject constructor(
-    private val prefs: SharedPreferences,
-    private val apiService: PostApiService
+    private val prefs: SharedPreferences
 ) {
     companion object {
         val idKey = "id"
@@ -38,18 +38,6 @@ class AppAuth @Inject constructor(
         } else {
             _authStateFlow = MutableStateFlow(AuthState(id, token))
         }
-        sendPushToken()
-    }
-
-    fun sendPushToken(token: String? = null) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
-                val pushToken = PushToken(token ?: Firebase.messaging.token.await())
-                apiService.push(pushToken)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
     }
 
     val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
@@ -62,7 +50,6 @@ class AppAuth @Inject constructor(
             putString(tokenKey, token)
             apply()
         }
-        sendPushToken()
     }
 
     @Synchronized
@@ -72,7 +59,6 @@ class AppAuth @Inject constructor(
             clear()
             commit()
         }
-        sendPushToken()
     }
 
 }

@@ -19,26 +19,15 @@ import javax.inject.Inject
 class NMediaApplication : Application(), Configuration.Provider {
     private val appScope = CoroutineScope(Dispatchers.Default)
 
-
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
-
-    @Inject
-    lateinit var appAuth: AppAuth
 
     @Inject
     lateinit var workManager: WorkManager
 
     override fun onCreate() {
         super.onCreate()
-        setupAuth()
         setupWork()
-    }
-
-    private fun setupAuth() {
-        appScope.launch {
-            appAuth.sendPushToken()
-        }
     }
 
     private fun setupWork() {

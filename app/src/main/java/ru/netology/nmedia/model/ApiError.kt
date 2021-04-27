@@ -1,26 +1,23 @@
 package ru.netology.nmedia.model
 
-import android.content.res.Resources
-import ru.netology.nmedia.R
+import java.lang.RuntimeException
 import java.net.ConnectException
+import java.sql.SQLException
 
-sealed class ApiError {
-    object UnknownException : ApiError()
-    object ServerError : ApiError()
-    object NetworkError : ApiError()
+sealed class ApiError(var code: String) : RuntimeException() {
     companion object {
-        fun fromThrowable(throwable: Throwable): ApiError =
-            when (throwable) {
-                is ApiException -> throwable.error
+        fun fromThrowable(e: Throwable): ApiError =
+            when (e) {
+                is ApiError -> e
+                is SQLException -> DbError
                 is ConnectException -> NetworkError
-                else -> UnknownException
+                else -> UnknownError
             }
     }
 }
 
-fun ApiError?.getCreateReadableMessageError(resources: Resources): String =
-    when (this) {
-        ApiError.UnknownException -> resources.getString(R.string.error_unknown)
-        ApiError.ServerError -> resources.getString(R.string.error_server)
-        ApiError.NetworkError, null -> resources.getString(R.string.error_network)
-    }
+
+class AppError(val status: Int, code: String) : ApiError(code)
+object NetworkError : ApiError("error_network")
+object DbError : ApiError("error_db")
+object UnknownError : ApiError("error_unknown")

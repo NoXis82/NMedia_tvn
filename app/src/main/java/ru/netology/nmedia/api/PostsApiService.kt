@@ -1,19 +1,13 @@
 package ru.netology.nmedia.api
 
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
+import retrofit2.Response
 import retrofit2.http.*
-import ru.netology.nmedia.BuildConfig
-import ru.netology.nmedia.application.NMediaApplication
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dto.Media
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.dto.PushToken
-import java.util.concurrent.TimeUnit
+
 
 interface PostApiService {
     @GET("posts")
@@ -52,6 +46,22 @@ interface PostApiService {
         @Field("pass") pass: String,
         @Field("name") name: String
     ): AuthState
+
+    @GET("posts/latest")
+    suspend fun getLatest(@Query("count") count: Int): Response<List<Post>>
+
+    @GET("posts/{id}/before")
+    suspend fun getBefore(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
+
+    @GET("posts/{id}/after")
+    suspend fun getAfter(
+        @Path("id") id: Long,
+        @Query("count") count: Int
+    ): Response<List<Post>>
+
 
     @POST("users/push-tokens")
     suspend fun push(@Body pushToken: PushToken): Unit

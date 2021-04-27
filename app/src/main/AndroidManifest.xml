@@ -25,26 +25,15 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".service.FCMService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
         <provider
             android:name="androidx.work.impl.WorkManagerInitializer"
             android:authorities="${applicationId}.workmanager-init"
-            tools:node="remove"/>
-
+            tools:node="remove" />
     </application>
-
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />

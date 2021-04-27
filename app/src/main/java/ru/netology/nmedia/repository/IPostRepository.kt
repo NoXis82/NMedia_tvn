@@ -1,13 +1,14 @@
 package ru.netology.nmedia.repository
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.netology.nmedia.auth.AuthState
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.PostEntity
 
-
 interface IPostRepository {
-    val posts: Flow<List<Post>>
+    val posts : Flow<PagingData<Post>>
+    suspend fun refreshPostsWorker()
     fun getNewerCount(id: Long): Flow<Int>
     fun getNewerList(id: Long): Flow<List<Post>>
     suspend fun getAll(): List<Post>

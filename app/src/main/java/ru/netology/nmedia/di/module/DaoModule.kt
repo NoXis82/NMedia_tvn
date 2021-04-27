@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.netology.nmedia.dao.PostDao
+import ru.netology.nmedia.dao.PostRemoteKeyDao
 import ru.netology.nmedia.dao.PostWorkDao
 import ru.netology.nmedia.db.AppDb
 
@@ -17,5 +18,9 @@ object DaoModule {
 
     @Provides
     fun providePostWorkDao(db: AppDb): PostWorkDao = db.postWorkDao()
+
+    @Provides
+    fun providePostRemoteKeyDao(db: AppDb): PostRemoteKeyDao = db.postRemoteKeyDao()
+
 
 }

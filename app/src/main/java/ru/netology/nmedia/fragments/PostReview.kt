@@ -3,7 +3,6 @@ package ru.netology.nmedia.fragments
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.viewModels
@@ -19,6 +18,7 @@ import ru.netology.nmedia.utils.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
 @ExperimentalCoroutinesApi
+@AndroidEntryPoint
 class PostReview : Fragment() {
 
     companion object {
@@ -26,7 +26,6 @@ class PostReview : Fragment() {
         var Bundle.author: String? by StringArg
         var Bundle.published: String? by StringArg
         var Bundle.content: String? by StringArg
-        //   var Bundle.videoUrl: String? by StringArg
     }
 
     private val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment)
@@ -34,12 +33,11 @@ class PostReview : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        val binding = FragmentPostReviewBinding.inflate(layoutInflater)
-        binding.content.text = arguments?.content
-        binding.author.text = arguments?.author
-        binding.published.text = arguments?.published
-        binding.menuPost.setOnClickListener {
+    ) = FragmentPostReviewBinding.inflate(layoutInflater).apply {
+        content.text = arguments?.content
+        author.text = arguments?.author
+        published.text = arguments?.published
+        menuPost.setOnClickListener {
             PopupMenu(it.context, it).apply {
                 inflate(R.menu.option_menu_post)
                 setOnMenuItemClickListener { item ->
@@ -67,9 +65,7 @@ class PostReview : Fragment() {
                     }
                 }
             }.show()
-
         }
-        return binding.root
-    }
+    }.root
 
 }

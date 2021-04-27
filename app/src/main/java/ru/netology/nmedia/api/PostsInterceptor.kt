@@ -2,9 +2,7 @@ package ru.netology.nmedia.api
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.netology.nmedia.model.ApiError
-import ru.netology.nmedia.model.ApiException
-import java.net.HttpURLConnection
+import ru.netology.nmedia.model.AppError
 
 class PostsInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response =
@@ -12,10 +10,7 @@ class PostsInterceptor : Interceptor {
             .let { response ->
                 when {
                     response.isSuccessful -> response
-                    response.code == HttpURLConnection.HTTP_INTERNAL_ERROR -> throw ApiException(
-                        ApiError.ServerError
-                    )
-                    else -> throw ApiException(ApiError.UnknownException)
+                    else -> throw AppError(response.code, response.message)
                 }
             }
 }

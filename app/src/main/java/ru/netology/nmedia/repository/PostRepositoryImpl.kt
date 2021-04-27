@@ -2,6 +2,7 @@ package ru.netology.nmedia.repository
 
 import android.net.Uri
 import androidx.core.net.toFile
+import androidx.paging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.MultipartBody
@@ -13,28 +14,56 @@ import ru.netology.nmedia.dao.*
 import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.*
 import ru.netology.nmedia.enumeration.*
+import ru.netology.nmedia.model.ApiError
+import ru.netology.nmedia.model.AppError
 import java.lang.Exception
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostRepositoryImpl @Inject constructor (
-    private val dao: PostDao,
+@OptIn(ExperimentalPagingApi::class)
+@Singleton
+class PostRepositoryImpl @Inject constructor(
+    private val postDao: PostDao,
     private val postWorkDao: PostWorkDao,
     private val apiService: PostApiService,
-    private val auth: AppAuth
+    private val auth: AppAuth,
+    private val postRemoteKeyDao: PostRemoteKeyDao,
+    remoteMediator: RemoteMediator<Int, PostEntity>
 ) : IPostRepository {
-    override val posts: Flow<List<Post>>
-        get() = dao.getAll().map {
-            it.sortedWith(Comparator { o1, o2 ->
-                when {
-                    o1.id == 0L && o2.id == 0L -> o1.localId.compareTo(o2.localId)
-                    o1.id == 0L -> -1
-                    o2.id == 0L -> 1
-                    else -> -o1.id.compareTo(o2.id)
-                }
-            })
-                .map(PostEntity::toDto)
+
+    companion object {
+        const val PAGE_SIZE = 5
+    }
+
+    override val posts: Flow<PagingData<Post>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE),
+        remoteMediator = remoteMediator,
+        pagingSourceFactory = postDao::pagingSource
+    ).flow.map { pagingData ->
+        pagingData.map(PostEntity::toDto)
+    }
+
+    override suspend fun refreshPostsWorker() {
+        val id = postRemoteKeyDao.max() ?: postDao.max()
+        val response = apiService.getAfter(id, PAGE_SIZE)
+        if (!response.isSuccessful) {
+            throw AppError(response.code(), response.message())
         }
-            .flowOn(Dispatchers.Default)
+        val body = response.body() ?: throw AppError(response.code(), response.message())
+        postDao.insertOrUpdate(body.toEntity())
+        postRemoteKeyDao.insert(
+            listOf(
+                PostRemoteKeyEntity(
+                    type = PostRemoteKeyEntity.KeyType.AFTER,
+                    id = body.first().id
+                ),
+                PostRemoteKeyEntity(
+                    type = PostRemoteKeyEntity.KeyType.BEFORE,
+                    id = body.last().id
+                )
+            )
+        )
+    }
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
         while (true) {
@@ -42,40 +71,39 @@ class PostRepositoryImpl @Inject constructor (
             emit(newer.size)
         }
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
 
     override fun getNewerList(id: Long): Flow<List<Post>> = flow {
         val posts = apiService.getNewer(id)
         emit(posts)
     }
-        .catch { e -> e.printStackTrace() }
+        .catch { e -> throw ApiError.fromThrowable(e) }
         .flowOn(Dispatchers.Default)
-
 
     override suspend fun getAll(): List<Post> {
         val netPosts = apiService.getAll()
-        dao.insertOrUpdate(netPosts.map(PostEntity.Companion::fromDto))
+        postDao.insertOrUpdate(netPosts.map(PostEntity.Companion::fromDto))
         return netPosts
     }
 
     override suspend fun unLikeById(id: Long) {
         apiService.unLikeById(id)
-        dao.likeById(id)
+        postDao.likeById(id)
     }
 
     override suspend fun likeById(id: Long) {
         apiService.likeById(id)
-        dao.likeById(id)
+        postDao.likeById(id)
     }
 
     override suspend fun removePost(id: Long) {
         apiService.removePost(id)
-        dao.removeById(id)
+        postDao.removeById(id)
     }
 
     override suspend fun sendNewer(posts: List<Post>) =
-        dao.insertOrUpdate(posts.map(PostEntity.Companion::fromDto))
+        postDao.insertOrUpdate(posts.map(PostEntity.Companion::fromDto))
 
     override suspend fun upload(upload: MediaUpload): Media {
         val media = MultipartBody.Part.createFormData(
@@ -96,9 +124,7 @@ class PostRepositoryImpl @Inject constructor (
 
     override suspend fun saveWork(post: Post, upload: MediaUpload): Long {
         val entity = PostWorkEntity.fromDto(post).apply {
-            if (upload != null) {
-                this.uri = upload.file.toURI().toString()
-            }
+            this.uri = upload.file.toURI().toString()
         }
         return postWorkDao.insert(entity)
     }
@@ -150,11 +176,11 @@ class PostRepositoryImpl @Inject constructor (
             )
             postWorkDao.removeById(id)
         } catch (e: Exception) {
-            e.printStackTrace()
+            throw ApiError.fromThrowable(e)
         }
     }
 
-    override suspend fun savePost(post: PostEntity) = dao.insert(post)
+    override suspend fun savePost(post: PostEntity) = postDao.insert(post)
 
     override suspend fun sendPost(post: Post): Post = apiService.savePost(post)
 
