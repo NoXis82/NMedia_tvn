@@ -133,8 +133,7 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = FeedModel(loading = true)
             try {
-                val posts = repository.getAll()
-                _state.value = FeedModel(empty = posts.isEmpty())
+                _state.value = FeedModel()
             } catch (e: IOException) {
                 _state.value = FeedModel(errorVisible = true)
             }

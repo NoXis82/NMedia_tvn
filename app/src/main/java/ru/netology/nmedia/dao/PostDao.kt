@@ -26,6 +26,8 @@ interface PostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNewer(posts: List<PostEntity>)
 
+    @Query("SELECT MAX(id) FROM PostEntity")
+    suspend fun max(): Long
 
     @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
     suspend fun updateContentById(id: Long, content: String)

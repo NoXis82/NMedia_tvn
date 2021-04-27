@@ -15,6 +15,7 @@ import ru.netology.nmedia.dto.*
 import ru.netology.nmedia.entity.*
 import ru.netology.nmedia.enumeration.*
 import ru.netology.nmedia.model.ApiError
+import ru.netology.nmedia.model.AppError
 import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,15 +27,42 @@ class PostRepositoryImpl @Inject constructor(
     private val postWorkDao: PostWorkDao,
     private val apiService: PostApiService,
     private val auth: AppAuth,
+    private val postRemoteKeyDao: PostRemoteKeyDao,
     remoteMediator: RemoteMediator<Int, PostEntity>
 ) : IPostRepository {
 
+    companion object {
+        const val PAGE_SIZE = 5
+    }
+
     override val posts: Flow<PagingData<Post>> = Pager(
-        config = PagingConfig(pageSize = 5),
+        config = PagingConfig(pageSize = PAGE_SIZE),
         remoteMediator = remoteMediator,
         pagingSourceFactory = postDao::pagingSource
     ).flow.map { pagingData ->
         pagingData.map(PostEntity::toDto)
+    }
+
+    override suspend fun refreshPostsWorker() {
+        val id = postRemoteKeyDao.max() ?: postDao.max()
+        val response = apiService.getAfter(id, PAGE_SIZE)
+        if (!response.isSuccessful) {
+            throw AppError(response.code(), response.message())
+        }
+        val body = response.body() ?: throw AppError(response.code(), response.message())
+        postDao.insertOrUpdate(body.toEntity())
+        postRemoteKeyDao.insert(
+            listOf(
+                PostRemoteKeyEntity(
+                    type = PostRemoteKeyEntity.KeyType.AFTER,
+                    id = body.first().id
+                ),
+                PostRemoteKeyEntity(
+                    type = PostRemoteKeyEntity.KeyType.BEFORE,
+                    id = body.last().id
+                )
+            )
+        )
     }
 
     override fun getNewerCount(id: Long): Flow<Int> = flow {
